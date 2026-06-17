@@ -57,7 +57,7 @@ There are 22 target genomes, that is, genomes of O111:H8.
       grep -c '^t'
 #+end_src
 #+begin_export latex
-There are 528 neighbor genomes, that is, genomes classified as
+There are 538 neighbor genomes, that is, genomes classified as
 belonging neither to O111:H8 nor to its parent.
 #+end_export
 #+begin_src sh <<Get genomes, Ch. \ref{ch:p}>>=
@@ -66,8 +66,8 @@ belonging neither to O111:H8 nor to its parent.
 #+end_src
 #+begin_export latex
 If we take the species \emph{E. coli} as target and count all of its
-complete genomes, we get 7,172. This tells us that only a small
-fraction, $(528+22)/7172\times 100\approx 8\%$ of \emph{E. coli}
+complete genomes, we get 7,854. This tells us that only a small
+fraction, $(538+22)/7854\times 100\approx 7\%$ of \emph{E. coli}
 genomes are classified below the species level, when probably all
 \emph{E. coli} genomes also belong to a category below the species
 level.
@@ -151,11 +151,11 @@ everything else.
 	    sed -E 's/(G.._[^_]+)_.*/\1/')
 #+end_src
 #+begin_export latex
-We get the accession's taxon-ID from the file \ty{accTax.txt}.
+We use sqlite3 to link the genome accession with its respective taxID.
 #+end_export
 #+begin_src sh <<Get taxon-ID, Ch. \ref{ch:p}>>=
-  tax=$(grep $acc accTax.txt |
-	    awk '{print $3}')
+  q="select taxid from genome where accession='$acc'"
+  tax=$(sqlite3 neidb "$q")
 #+end_src
 #+begin_export latex
 For the new name, we concatenate the taxon-ID with the accession via
@@ -209,7 +209,7 @@ case we first label the internal nodes of the tree.
   mv t all.nwk
 #+end_src
 #+begin_export latex
-Now we can automatically find our target clade, 29, with the program
+Now we can find our target clade, 29, with the program
 \ty{fintac}. Its output tells us that clade 29 has a perfect ``split''
 in the sense that it contains only O111:H8 and its complement contains
 none. We also note that the distance to its parent is $6\times
