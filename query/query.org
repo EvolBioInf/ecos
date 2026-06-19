@@ -33,23 +33,11 @@ parent node of 1.
   fintac -t 562_021307345.1 all.nwk
 #+end_src
 #+begin_export latex
-We link the corresponding distance matrix from our tree to our current
-directory.
-
-We can then remove our outlier from the matrix using mattools and we
-name the resulting matrix ecoli.nwk.
+We remove this singleton by picking the entire tree starting on node
+2. The selected tree then gets relabeled.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  ln -s ../data/phylonium.dist all.dist
-  mat grep -v "562_021307345.1" all.dist > ecoli.nwk
-#+end_src
-#+begin_export latex
-Since we have modified the matrix it would be necessary to recalculate
-the tree. We also supply this modified tree which we link to our
-directory.
-#+end_export
-#+begin_src sh <<query>>=
-  ln -s ../data/ecoli.nwk .
+  pickle -t 2 all.nwk | land > ecoli.nwk
 #+end_src
 #+begin_export latex
 We then confirm that we have a fully resolved \textit{E.~coli}
