@@ -3,19 +3,13 @@ In Chapter~\ref{ch:q} we identified all genomes of our target O111:H8
 and placed them in the context of its closest relatives, the two
 neighbors shown in Figure~\ref{fig:all}. This means we can construct
 markers for the target genomes by identifying the genome regions that
-appear in all target genomes that are absent from the neighbors. We
-begin by linking the tree of all \emph{E. coli} genomes into our
-working directory.
+appear in all target genomes that are absent from the neighbors.
+
+From our \emph{E.~coli} tree we get the 49 genome accessions of the
+taxa in Figure~\ref{fig:all}.
 #+end_export
 #+begin_src sh <<markers.sh>>=
-  ln -s ../data/phylonium.nwk all.nwk
-#+end_src
-#+begin_export latex
-From this tree we get the 50 genome accessions of the taxa in
-Figure~\ref{fig:all}.
-#+end_export
-#+begin_src sh <<markers.sh>>=
-  pickle 5005 all.nwk |
+  pickle 4647 eco2.nwk |
       grep -v '^#' |
       sed 's/[^_]*_//' > acc.txt
 #+end_src
@@ -38,44 +32,21 @@ We unzip and rehydrate the downloaded data.
 #+begin_export latex
 We rename the genome files on the pattern $<$taxid$>$\_$<$accession$>$
 and link them into directory \ty{all} as we did in
-Chapter~\ref{ch:p}. The only step that differs is how we obtain the
-matching taxon-ID. For that we shall directly query \ty{neidb}, which
-we first link to our working directory.
-#+end_export
-#+begin_src sh <<markers.sh>>=
-  ln -s ../data/neidb
-#+end_src
-#+begin_export latex
-Now we can make the directory \ty{all} and iterate over the data files
-to link them into it.
+Chapter~\ref{ch:p}.
 #+end_export
 #+begin_src sh <<markers.sh>>=
   mkdir all
-  for file in $(ls ncbi_*/*/*/*.fna); do
-      ##<<Get accession, Ch. \ref{ch:p}>>
-      ##<<Get taxon-ID, Ch. \ref{ch:q}>>
-      ##<<Construct new name, Ch. \ref{ch:p}>>
-      ##<<Link file into \ty{all}, Ch. \ref{ch:p}>>
-  done
+  bash rename.sh
 #+end_src
 #+begin_export latex
-We get the taxon-ID by querying \ty{neidb}.
-#+end_export
-#+begin_src sh <<Get taxon-ID, Ch. \ref{ch:q}>>=
-  q="select taxid from genome where accession='$acc'"
-  tax=$(sqlite3 neidb "$q")
-#+end_src
-#+begin_export latex
-We use the program \ty{fur} for finding the desired unique genome
-regions~\cite{hau21:fur,vie24:mar}. It runs on a database constructed
-with \ty{makeFurDb}, which takes as input a directory of target
-genomes and a directory of neighbors genomes. We first construct the
-directory of target genomes, \ty{targets}.
+We again use the program \ty{fur} for finding the desired unique
+genome regions~\cite{hau21:fur,vie24:mar}. So we first
+construct the directory of target genomes, \ty{targets}.
 #+end_export
 #+begin_src sh <<markers.sh>>=
   mkdir targets
-  pickle -t 5005 all.nwk |
-      pickle 5007 |
+  pickle -t 4647 eco2.nwk |
+      pickle 4649 |
       grep -v '^#' |
       while read name; do
 	  ln -s $(pwd)/all/${name} targets/${name}.fasta
@@ -87,8 +58,8 @@ complement of the target genomes.
 #+end_export
 #+begin_src sh <<markers.sh>>=
   mkdir neighbors
-  pickle -t 5005 all.nwk |
-      pickle -c 5007 |
+  pickle -t 4647 eco2.nwk |
+      pickle -c 4649 |
       grep -v '^#' |
       while read name; do
 	  ln -s $(pwd)/all/${name} neighbors/${name}.fasta
@@ -110,8 +81,8 @@ database.
       cleanSeq > markers.fasta
 #+end_src
 #+begin_export latex
-This yields 63\,kb marker candidates, or, if we subtract the remaining
-N's, $62803-1183\approx 62$\,kb.
+This yields 64\,kb marker candidates, or, if we subtract the remaining
+N's, $63732-1248\approx 62$\,kb.
 #+end_export
 #+begin_src sh <<markers.sh>>=
 cres markers.fasta
@@ -136,26 +107,24 @@ have the very low penalty of 0.01.
       head
 #+end_src
 #+begin_export latex
-We find that the best primer pair has a penalty of
 \begin{verbatim}
 # Penalty  Forward                    Reverse                ...
 0.010060   TGTGTACTATTTGCAACGCA       CACATGGCCAGGTATCAAAA   ...
 ...
 \end{verbatim}
-#+end_export
-#+begin_export latex
+
 The primer candidates would next be tested \emph{in silico} for
 sensitivity and specificity on the \emph{E. coli} genomes used in the
-construction of \ty{all.nwk}. Primers that pass could then be further
-tested on a comprehensive DNA database like \ty{nt} before moving on
-to \emph{in vitro} testing.
+construction of \ty{eco2.nwk}. Primers with sufficient sensitivity and
+specificity could then be further tested on a comprehensive DNA
+database like \ty{nt} before moving on to \emph{in vitro} testing.
 #+end_export
 #+begin_export latex
-We are finished with marker discovery, so we delete the files we
-generated.
+We are finished with marker discovery, so we delete the files we don't
+need any more.
 #+end_export
 #+begin_src sh <<markers.sh>>=
-  rm -r all acc.txt all.nwk md5sum.txt ncbi_dataset \
+  rm -r all acc.txt eco2.nwk md5sum.txt ncbi_dataset \
      ncbi_dataset.zip markers.db markers.prim neidb \
      neighbors README.md targets
 #+end_src

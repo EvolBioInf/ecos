@@ -13,6 +13,7 @@ doc/intro.tex
 doc/markers.tex
 doc/version.txt
 doc/date.txt
+free
 pilot/*
 !pilot/all.ps
 !pilot/Makefile
@@ -21,7 +22,7 @@ query/*
 !query/all.ps
 !query/Makefile
 !query/query.org
-tutorial/*
+tutorial
 !tutorial/pilot.sh
 !tutorial/query.sh
 !tutorial/markers.sh

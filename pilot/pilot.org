@@ -1,14 +1,9 @@
 #+begin_export latex
-Our working directory is \ty{tutorial} inside the \ty{o111h8} repo. We
-start by linking the Neighbors database.
-#+end_export
-#+begin_src sh <<pilot.sh>>=
-  ln -s ../data/neidb
-#+end_src
-#+begin_export latex
-We focus on \emph{E. coli} O111:H8. So we get its genomes and that of
-some of its close relatives, rename their files, calculate the
-phylogeny, and analyze the phylogeny.
+Our working directory is \ty{tutorial} inside the \ty{o111h8} repo.
+We focus on \emph{E. coli} serotype O111:H8, which we analyze in four
+steps. We get its genomes and that of some of its close relatives,
+rename their files, calculate the phylogeny, and analyze the
+phylogeny.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
   ##<<Get genomes, Ch. \ref{ch:p}>>
@@ -66,8 +61,8 @@ belonging neither to O111:H8 nor to its parent.
 #+end_src
 #+begin_export latex
 If we take the species \emph{E. coli} as target and count all of its
-complete genomes, we get 7,854. This tells us that only a small
-fraction, $(538+22)/7854\times 100\approx 7\%$ of \emph{E. coli}
+complete genomes, we get 7,884. This tells us that only a small
+fraction, $(538+22)/7884\times 100\approx 7\%$ of \emph{E. coli}
 genomes are classified below the species level, when probably all
 \emph{E. coli} genomes also belong to a category below the species
 level.
@@ -119,8 +114,8 @@ rather long names with redundant information, for example
 \begin{verbatim}
 GCF_000981485.1_EcoliK12AG100_genomic.fna
 \end{verbatim}
-These file names later become leaf labels in our phylogeny. Since our
-aim is to classify genomes, we rename the files on the pattern
+These file names later become the leaf labels in our phylogeny. Since
+our aim is to classify genomes, we rename the files on the pattern
 $<$taxon-ID$>$\_$<$accession$>$. We also extract them from their
 subdirectories and put them into a single directory, \ty{all}, which
 we create first.
@@ -129,49 +124,27 @@ we create first.
   mkdir all
 #+end_src
 #+begin_export latex
-For renaming, we iterate over the genome files. For each file, we get
-the accession, and with that we get the taxon. From the accession and
-the taxon-ID we construct the new name, to which we link the file
-inside \ty{all}.
+For renaming, we run the script \ty{rename.sh}.
 #+end_export
 #+begin_src sh <<Rename genome files, Ch. \ref{ch:p}>>=
-  for file in $(ls ncbi_*/*/*/*.fna); do
-      ##<<Get accession, Ch. \ref{ch:p}>>
-      ##<<Get taxon-ID, Ch. \ref{ch:p}>>
-      ##<<Construct new name, Ch. \ref{ch:p}>>
-      ##<<Link file into \ty{all}, Ch. \ref{ch:p}>>
-  done
+  bash rename.sh
 #+end_src
 #+begin_export latex
-We get the accession from the base name of the file by deleting
-everything else.
+We check the renaming worked.
 #+end_export
-#+begin_src sh <<Get accession, Ch. \ref{ch:p}>>=
-  acc=$(basename $file |
-	    sed -E 's/(G.._[^_]+)_.*/\1/')
+#+begin_src sh <<Rename genome files, Ch. \ref{ch:p}>>=
+  ls all |
+      head
 #+end_src
 #+begin_export latex
-We use sqlite3 to link the genome accession with its respective taxID.
-#+end_export
-#+begin_src sh <<Get taxon-ID, Ch. \ref{ch:p}>>=
-  q="select taxid from genome where accession='$acc'"
-  tax=$(sqlite3 neidb "$q")
-#+end_src
-#+begin_export latex
-For the new name, we concatenate the taxon-ID with the accession via
-an underscore.
-#+end_export
-#+begin_src sh <<Construct new name, Ch. \ref{ch:p}>>=
-  name="${tax}_${acc}"
-#+end_src
-#+begin_export latex
-We create a symbolic link from the original file to the new name
-inside \ty{all}.
-#+end_export
-#+begin_src sh <<Link file into \ty{all}, Ch. \ref{ch:p}>>=
-  ln -s $(pwd)/$file all/$name
-#+end_src
-#+begin_export latex
+\begin{verbatim}
+37762_GCF_001559615.2
+37762_GCF_001559635.1
+83333_GCA_015290945.1
+83333_GCF_000800765.1
+83333_GCF_000974405.1
+...
+\end{verbatim}
 We calculate the pairwise distances between the genomes and transform
 them into a neighbor-joining tree. This is midpoint rooted before we
 store it in Newick format in the file \ty{all.nwk}.
@@ -242,7 +215,7 @@ neighbors. We use the program \ty{fur} for finding these unique genome
 regions. It runs on a database constructed with \ty{makeFurDb}, which
 takes as input a directory of target genomes and a directory of
 neighbors genomes. We first construct the directory of target genomes,
-\ty{targets}.
+\ty{targets}, and link the target genomes into it.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
   mkdir targets
@@ -253,8 +226,8 @@ neighbors genomes. We first construct the directory of target genomes,
       done
 #+end_src
 #+begin_export latex
-The directory of neighbors genomes, \ty{neighbors}, holds the
-complement of the target genomes.
+Similarly, the directory of neighbors genomes, \ty{neighbors}, holds
+the links to the complement of the target genomes.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
   mkdir neighbors
@@ -266,14 +239,14 @@ complement of the target genomes.
 #+end_src
 #+begin_export latex
 We construct the Fur database, \ty{pilot.db}. This takes roughly 14\,s
-on our run of the mill laptop.
+on our laptop.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
   makeFurDb -t targets -n neighbors -d pilot.db
 #+end_src
 #+begin_export latex
 We use \ty{fur} to extract the marker candidates from the Fur
-database.
+database and clean them by removing long runs of \ty{N}.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
   fur -d pilot.db |
@@ -289,7 +262,7 @@ cres pilot.fasta
 To extract primers from the marker candidates, we convert them to
 input for primer construction, run \ty{primers3} on them, and extract
 the top primer pairs from them, the best of which has the very low
-penalty 0.00014.
+penalty of $1.4\times 10^{-4}$.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
   fa2prim pilot.fasta |

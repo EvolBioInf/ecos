@@ -5,4 +5,4 @@ query.sh: query.org ../pilot/pilot.org
 test: clean query.sh
 	bash query.sh
 clean:
-	rm -rf all.nwk neidb query.sh
+	rm -rf all.nwk neidb query.sh t1.txt t2.txt

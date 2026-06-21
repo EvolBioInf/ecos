@@ -1,63 +1,79 @@
 #+begin_export latex
 Again, our working directory is \ty{tutorial} inside the \ty{o111h8}
-repo. We link the phylogeny of all complete \emph{E. coli} genomes
-calculated with \ty{phylonium}.
+repo. We count the 7,386 complete genomes in the \emph{E. coli} tree
+by picking its root, node 1, and counting the listed leaves.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  ln -s ../data/phylonium.nwk all.nwk
-#+end_src
-#+begin_export latex
-We count the 7,354 taxa on the tree by picking its root, node 1, and
-counting the listed leaves.
-#+end_export
-#+begin_src sh <<query.sh>>=
-  pickle 1 all.nwk |
+  pickle 1 eco.nwk |
       grep -c -v '^#'
 #+end_src
 #+begin_export latex
 Since bacterial species are defined as having an ANI distance of at
-least 95, we check what is the largest distance present in our
-tree. We clip the output to the first line only.
+least 95, we measure the largest distance in our tree, 0.0672.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  midRoot -p all.nwk |
+  midRoot -p eco.nwk |
       head -n 1
 #+end_src
 #+begin_export latex
-We notice that the largest distance, 0.0862, which implies an ANI
-below the threshold for bacterial species. We find that one of the
-most distantly related genomes is located at the root of the tree, has
-parent node of 1.
+\begin{verbatim}
+# d(562_GCF_022654545.1, 562_GCF_021307345.1): 0.0672
+\end{verbatim}
+A distance of 0.0672 implies an ANI of 93, which is below the 95 ANI
+threshold for bacterial species. This suggests our current sample
+contains at least one genome that does not belong to
+\emph{E. coli}. To investigate further, we climb from the two most
+distant taxa towards the root of the phylogeny. The climb from
+\begin{verbatim}
+562_GCF_022654545.1
+\end{verbatim}
+consists of 72 steps, indicating many short branches on the way.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  fintac -t 562_021307345.1 all.nwk
+  climt 562_GCF_022654545.1 eco.nwk |
+      head -n 2
 #+end_src
 #+begin_export latex
-We remove this singleton by picking the entire tree starting on node
-2. The selected tree then gets relabeled.
+\begin{verbatim}
+#Up Node  BranchLength  CumulativeBranchLength
+72  1     0             0.0335740797
+\end{verbatim}
+#+end_export
+#+begin_export latex
+In contrast, the climb from
+\begin{verbatim}
+562_GCF_021307345.1
+\end{verbatim}
+consists of a single step.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  pickle -t 2 all.nwk | land > ecoli.nwk
+  climt 562_GCF_021307345.1 eco.nwk |
+      head -n 2
 #+end_src
 #+begin_export latex
-We then confirm that we have a fully resolved \textit{E.~coli}
-phylogenetic tree that fulfills the ANI species criteria.
+We remove that taxon and relabel the internal nodes of the resulting
+tree.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  midRoot -p ecoli.nwk |
+  pickle -t -c 562_GCF_021307345.1 eco.nwk |
+      land > eco2.nwk
+#+end_src
+#+begin_export latex
+The most distant genomes in our \emph{E.~coli} sample now have ANI 96,
+which fits the species criterion.
+#+end_export
+#+begin_src sh <<query.sh>>=
+  midRoot -p eco2.nwk |
       head -n 1
 #+end_src
 #+begin_export latex
-We can next determine the taxa with complete genomes that belong to the
-taxonomic subtree rooted on 991910. We use the program \ty{neighbors}
-for this, which requires the Neighbors database, so we link this.
-#+end_export
-#+begin_src sh <<query.sh>>=
-ln -s ../data/neidb
-#+end_src
-#+begin_export latex
-It turns out there is only one taxon in the subtree rooted on 991910,
-991910 itself.
+\begin{verbatim}
+# d(562_GCF_057180125.1, 562_GCF_022654545.1): 0.0394
+\end{verbatim}
+We can next determine the taxa with complete genomes that belong to
+the taxonomic subtree rooted on 991910. We use the program
+\ty{neighbors} for this, which shows there is only one taxon in the
+subtree rooted on 991910, 991910 itself.
 #+end_export
 #+begin_src sh <<query.sh>>=
   neighbors -L complete -t 991910 -o -l neidb |
@@ -70,117 +86,68 @@ It turns out there is only one taxon in the subtree rooted on 991910,
 We count the 22 genomes on the tree classified as O111:H8.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  pickle 1 ecoli.nwk |
-      grep -c '^991910_'
+  pickle 1 eco2.nwk |
+      grep -c 991910_
 #+end_src
 #+begin_export latex
 We use \ty{fintac} to find the clade with the largest split between
-O111:H8 genomes and the rest. This is clade 5041 with 7 targets, 3
-non-targets, or \emph{neighbors}, and no unknown genomes. Unknown
-genomes are defined as those whose TaxID matches that of a species
-rank. In this case, genomes that are labelled as being only
-\textit{Escherichia coli} with no further information regarding their
-type strain or serotype.
+O111:H8 genomes and the rest. By default, any taxon that is not a
+target is classified as neighbor. However, we can use \ty{-u} to
+assert that taxa classified as \emph{E.~coli} are ``unknown''. In this
+way we find clade 4649, which contains not only our 22 targets, but in
+addition 8 neighbors and 17 unknowns.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  fintac -t '^991910_' ecoli.nwk
+  fintac -t 991910_ -u 562_ eco2.nwk
 #+end_src
 #+begin_export latex
 \begin{verbatim}
-#Clade  Targets  Neighbors  Split (%)  Parent  Dist(Parent)
-5041    7        3          99.75      5032    2.13e-05
+#Clade  Targets  Neighbors  Unknowns  Split (%)  Parent  Dist(Parent)
+4649    22       8          17        98.53      4647    0.000465
 \end{verbatim}
-#+end_export
-#+begin_export latex
-We suspect that the missing 15 O111:H8 genomes are close by and climb
-the tree to find that there are 38 ancestral nodes of 5041.
-#+end_export
-#+begin_src sh <<query.sh>>=
-  climt 5041 ecoli.nwk
-#+end_src
-#+begin_export latex
-\begin{verbatim}
-# Up   Node   Branch Length   Cumulative Branch Length
-38     1      0               0.01981767
-...
-13     5005   0.000146        0.00063167
-12     5007   0.000385        0.00024667
-11     5008   1.45e-05        0.00023217
-10     5018   2.63e-05        0.00020587
-9      5019   3.1e-05         0.00017487
-8      5020   3.48e-05        0.00014007
-7      5021   8.27e-06        0.0001318
-6      5023   1.62e-05        0.0001156
-5      5025   2.18e-05        9.38e-05
-4      5027   2.74e-05        6.64e-05
-3      5028   2.01e-05        4.63e-05
-2      5029   1.23e-05        3.4e-05
-1      5032   1.27e-05        2.13e-05
-0      5041   2.13e-05        0
-\end{verbatim}
-We look for the most recent common ancestor of all O111:H8 genomes on
-the tree. For this we scan the branch lengths going from 5041 towards
-the root and notice that the branches are very short up until node
-5007, where the branch distance suddenly more than doubles. We
-hypothesize that this is the most recent common ancestor. If this were
-true, we'd find the 22 target genomes in node 5007 and less than 22
-target genomes in its immediate child, node 5008. We look at node 5007
-first and find that, as hypothesized, it contains our 22 target
-genomes.
-#+end_export
-#+begin_src sh <<query.sh>>=
-  pickle 5007 ecoli.nwk |
-      grep -c '^991910_'
-#+end_src
-#+begin_export latex
-We also find that 5008 contains only 21 target genomes, which makes
-node 5007 our target clade.
-#+end_export
-#+begin_src sh <<query.sh>>=
-  pickle 5008 ecoli.nwk |
-      grep -c '^991910_'
-#+end_src
-#+begin_export latex
 To put our target clade in context, we plot the subtree rooted on its
-parent, 5005, without the labels of the internal nodes.
+parent, 4647, without the labels of the internal nodes.
 Figure~\ref{fig:all} shows this tree with the \emph{E. coli} O111:H8
 genomes marked $T$ for \emph{target}, its two closest relatives marked
 $N$ for \emph{neighbors}, and the node with the highest split score
 originally picked by \ty{fintac} marked $S$.
 \begin{figure}
   \begin{center}
-    \rput(3.8,2.55){$T$}
+    \rput(3.8,1.7){$T$}
     \rput(3.8,0.6){$N$}
-    \rput(6.15,9.55){$S$}
-    \includegraphics{../query/all}
+    \includegraphics{../query/eco2}
   \end{center}
-  \caption{The 48 complete target genomes of \emph{Escherichia coli}
+  \caption{The 47 complete target genomes of \emph{Escherichia coli}
     O111:H8, $T$, in the context of its closest relatives, the two
-    neighbors in clade $N$; $S$ is the clade with the highest split
-    score in the full species phylogeny.}\label{fig:all}
+    neighbors in clade $N$.}\label{fig:all}
 \end{figure}
 #+end_export
 #+begin_src sh <<query.sh>>=
-  pickle -t 5005 ecoli.nwk |
+  pickle -t 4647 eco2.nwk |
       land -r |
       plotTree
 #+end_src
 #+begin_export latex
-We count 48 complete genomes in clade 5007. This means we have
-discovered 26 complete genomes of \emph{E. coli} O111:H8 that are
-classified differently.
+We count 47 complete genomes in clade 4649. This means we have
+discovered 25 candidate O111:H8 genomes.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  pickle 5007 ecoli.nwk |
+  pickle 4649 eco2.nwk |
       grep -v '^#' -c
 #+end_src
 #+begin_export latex
+To check the true serotype of the candidate genomes, we join the 47
+genomes in clade 4649 to the serotype list in \ty{sero.txt}. This
+shows that indeed all 47 genomes in clade 4649 have are O111:H8. In
+other words, we have discovered and additional 25 genomes that were
+not classified as O111:H8.
+
 Let's take a closer at the taxa in our target clade. Apart from the 22
 O111:H8 genomes, we find 18 \emph{E. coli} (562). We shall look up the
 remaining five taxon-IDs in a moment.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  pickle 5007 ecoli.nwk |
+  pickle 4649 eco2.nwk |
     grep -v '^#' |
     tr '_' ' ' |
     awk '{print $1}' |
@@ -191,7 +158,7 @@ remaining five taxon-IDs in a moment.
 #+begin_export latex
 \begin{verbatim}
      22 991910
-     18 562
+     17 562
       4 373045
       1 585396
       1 397453
@@ -230,7 +197,7 @@ taxon IDs and their corresponding names is shown in Table
       Taxon ID & Name & Count \\
      \hline
       991910  & \textit{Escherichia coli} O111:H8 & 22\\
-      562     & \textit{Escherichia coli} & 18\\
+      562     & \textit{Escherichia coli} & 17\\
       373045  & \textit{Escherichia coli} O111:NM & 4\\
       168927  & \textit{Escherichia coli} O111:H- & 1\\
       397453  & \textit{Escherichia coli} O111:H2 & 1\\
@@ -242,9 +209,10 @@ taxon IDs and their corresponding names is shown in Table
 \end{table}
 #+end_export
 #+begin_export latex
-We've reached the end of the query section, so we remove the two files
-we have produced.
+We've reached the end of the query section, so we remove three of the
+four files we have produced, but leave \ty{eco2.nwk} for further
+reference.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  rm ecoli.nwk neidb
+  rm neidb t1.txt t2.txt
 #+end_src
