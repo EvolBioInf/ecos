@@ -2,8 +2,8 @@
 Our working directory is \ty{tutorial} inside the \ty{o111h8} repo.
 We focus on \emph{E. coli} serotype O111:H8, which we analyze in four
 steps. We get its genomes and that of some of its close relatives,
-rename their files, calculate the phylogeny, and analyze the
-phylogeny.
+rename the genome files, calculate the genome phylogeny, and analyze
+the phylogeny.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
   ##<<Get genomes, Ch. \ref{ch:p}>>
@@ -27,10 +27,10 @@ To get the genomes, we first look up the taxon-ID of O111:H8,
 \end{verbatim}
 The \emph{neighbors} of a taxonomic target $t$ are all the taxa in the
 subtree rooted on the parent of $t$ that belong neither to the target
-nor to the parent.  We look at the first 30 rows of the list of
-complete target and neighbor genomes for O111:H8. For each genome we
-get three pieces of information, a ``t'' or an ``n'' indicating target
-or neighbor, the accession, and the taxon-ID.
+nor to the parent, \emph{E.~coli}.  We look at the first 30 rows of
+the list of complete target and neighbor genomes for O111:H8. For each
+genome we get three pieces of information, a ``t'' or an ``n''
+indicating target or neighbor, the accession, and the taxon-ID.
 #+end_export
 #+begin_src sh <<Get genomes, Ch. \ref{ch:p}>>=
   neighbors -l -L complete -t 991910 neidb |
@@ -61,11 +61,10 @@ belonging neither to O111:H8 nor to its parent.
 #+end_src
 #+begin_export latex
 If we take the species \emph{E. coli} as target and count all of its
-complete genomes, we get 7,884. This tells us that only a small
-fraction, $(538+22)/7884\times 100\approx 7\%$ of \emph{E. coli}
-genomes are classified below the species level, when probably all
-\emph{E. coli} genomes also belong to a category below the species
-level.
+complete genomes, we get 7,884. This tells us that only 7\,\% of
+\emph{E. coli} genomes are classified below the species rank, when
+probably far more \emph{E. coli} genomes also belong to known
+categories below the species rank.
 #+end_export
 #+begin_src sh <<Get genomes, Ch. \ref{ch:p}>>=
   neighbors -l -L complete -t 562 -o neidb |
@@ -73,7 +72,7 @@ level.
 #+end_src
 #+begin_export latex
 For our pilot analysis we pick all 22 target genomes and the first 28
-neighbor genomes, a total of 50, and store them in a file of
+neighbor genomes listed, a total of 50, and store them in a file of
 accessions and taxa, \ty{accTax.txt}.
 #+end_export
 #+begin_src sh <<Get genomes, Ch. \ref{ch:p}>>=
@@ -155,10 +154,10 @@ store it in Newick format in the file \ty{all.nwk}.
       midRoot > all.nwk
 #+end_src
 #+begin_export latex
-We plot the tree to get Figure~\ref{fig:o111}, where all taxa with
+We plot the tree to get Figure~\ref{fig:o111}, where the 22 taxa with
 the taxon-ID of O111:H8, 991910, cluster together, as they
-should. Moreover, the 991910 clade contains no extraneous accession,
-it is monophyletic.
+should. Moreover, the 991910 clade contains no genomes classified as
+something other than O111:H8.
 \begin{figure}
   \begin{center}
     \includegraphics{../pilot/all}
@@ -174,8 +173,9 @@ it is monophyletic.
 #+begin_export latex
 It is easy to inspect a tree with 50 taxa like
 Figure~\ref{fig:o111}. However, let's go through the steps we would
-take when analyzing a tree too large for manual inspection. In that
-case we first label the internal nodes of the tree.
+take when analyzing a tree so large that manual inspection becomes
+cumbersome. In that case we first label the internal nodes of the
+tree.
 #+end_export
 #+begin_src sh <<Analyze phylogeny, Ch. \ref{ch:p}>>=
   land all.nwk > t
@@ -214,7 +214,7 @@ regions that appear in all target genomes that are absent from the
 neighbors. We use the program \ty{fur} for finding these unique genome
 regions. It runs on a database constructed with \ty{makeFurDb}, which
 takes as input a directory of target genomes and a directory of
-neighbors genomes. We first construct the directory of target genomes,
+neighbor genomes. We first construct the directory of target genomes,
 \ty{targets}, and link the target genomes into it.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
@@ -226,7 +226,7 @@ neighbors genomes. We first construct the directory of target genomes,
       done
 #+end_src
 #+begin_export latex
-Similarly, the directory of neighbors genomes, \ty{neighbors}, holds
+Similarly, the directory of neighbor genomes, \ty{neighbors}, holds
 the links to the complement of the target genomes.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
@@ -253,7 +253,7 @@ database and clean them by removing long runs of \ty{N}.
       cleanSeq > pilot.fasta
 #+end_src
 #+begin_export latex
-This yields 157\,kb of potential marker material.
+This yields 157\,kb of candidate marker material.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
 cres pilot.fasta
@@ -261,8 +261,8 @@ cres pilot.fasta
 #+begin_export latex
 To extract primers from the marker candidates, we convert them to
 input for primer construction, run \ty{primers3} on them, and extract
-the top primer pairs from them, the best of which has the very low
-penalty of $1.4\times 10^{-4}$.
+the top primer pairs from them. The best of these top primer pairs has
+the very low penalty of $1.4\times 10^{-4}$.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
   fa2prim pilot.fasta |
@@ -279,19 +279,16 @@ We find that the best primer pair has a penalty of
 0.000142   CACCATAATTCTGGGCTACG  CCGCCATACAATCCAGTTAG  ...
 ...
 \end{verbatim}
-#+end_export
-#+begin_export latex
 Please note that these are \emph{not} primers intended for further
 use. For a more promising set of primers, please see
 Chapter~\ref{ch:m}.
-#+end_export
-#+begin_export latex
+
 We end the pilot section of this tutorial by cleaning up our working
 directory, while keeping the putative markers we found in
 \ty{markers.fasta}.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
   rm -r accTax.txt acc.txt all all.nwk md5sum.txt \
-     ncbi_dataset ncbi_dataset.zip neidb neighbors \
+     ncbi_dataset ncbi_dataset.zip neighbors \
      pilot.db README.md targets
 #+end_src

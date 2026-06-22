@@ -9,7 +9,7 @@ strains.
 The classification of bacterial genomes below the species rank is the
 topic of our forthcoming manuscript entitled \textit{Classifying
   Bacterial Genomes Below the Species Rank}. In this accompanying
-tutorial we show how to detect the genomes of a particular target
+tutorial we also show how to detect the genomes of a particular target
 organism, \emph{Escherichia coli} serotype O111:H8. Serotype O111:H8
 belongs to the ``Big Six'' of food-borne pathogenic \emph{E. coli}
 that are associated world-wide with disease outbreaks ranging from
@@ -26,12 +26,13 @@ run time is difficult to construct, amend, and maintain.
 
 We therefore begin this tutorial in Chapter~\ref{ch:p} with a pilot
 study on how to construct a phylogeny from a sample of 50 complete
-\emph{E. coli} genomes that contains the 22 complete O111:H8 genomes
-in Genbank and 28 closely related genomes. In Chapter~\ref{ch:q} we
-show how to query a precomputed phylogeny of 7,386 \emph{E. coli}
-genomes to identify all available genomes of O111:H8. This complete
-sample turns out to contain not only the original 22 O111:H8, but an
-additional 25 genomes hitherto not classified as O111:H8.
+\emph{E. coli} genomes that contains the 22 O111:H8 genomes that were
+in Genbank on 17th June 2026 and 28 closely related genomes.  In
+Chapter~\ref{ch:q} we show how to query a precomputed phylogeny of
+7,386 \emph{E. coli} genomes to identify all available genomes of
+O111:H8.  This complete sample turns out to contain not only the
+original 22 O111:H8, but an additional 25 genomes hitherto not
+classified as O111:H8.
 
 The individual computations necessary for this workflow take no more
 than a few seconds on a consumer-grade laptop thus avoiding the

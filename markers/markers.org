@@ -1,9 +1,11 @@
 #+begin_export latex
-In Chapter~\ref{ch:q} we identified all genomes of our target O111:H8
-and placed them in the context of its closest relatives, the two
-neighbors shown in Figure~\ref{fig:all}. This means we can construct
-markers for the target genomes by identifying the genome regions that
-appear in all target genomes that are absent from the neighbors.
+We stay in our working directory \ty{tutorial} inside the repo
+\ty{o111h8}. In Chapter~\ref{ch:q} we identified all genomes of our
+target O111:H8 and placed them in the context of its closest
+relatives, the two neighbors shown in Figure~\ref{fig:all}. This means
+we can construct markers for the target genomes by identifying the
+genome regions that appear in all target genomes that are absent from
+the neighbors.
 
 From our \emph{E.~coli} tree we get the 49 genome accessions of the
 taxa in Figure~\ref{fig:all}.
@@ -40,8 +42,9 @@ Chapter~\ref{ch:p}.
 #+end_src
 #+begin_export latex
 We again use the program \ty{fur} for finding the desired unique
-genome regions~\cite{hau21:fur,vie24:mar}. So we first
-construct the directory of target genomes, \ty{targets}.
+genome regions~\cite{hau21:fur,vie24:mar}. So we first construct the
+directory of target genomes, \ty{targets}, and then link the target
+genomes into it.
 #+end_export
 #+begin_src sh <<markers.sh>>=
   mkdir targets
@@ -53,8 +56,8 @@ construct the directory of target genomes, \ty{targets}.
       done
 #+end_src
 #+begin_export latex
-The directory of neighbors genomes, \ty{neighbors}, holds the
-complement of the target genomes.
+Similarly, we link the neighbors genomes into the directory
+\ty{neighbors}.
 #+end_export
 #+begin_src sh <<markers.sh>>=
   mkdir neighbors
@@ -82,7 +85,9 @@ database.
 #+end_src
 #+begin_export latex
 This yields 64\,kb marker candidates, or, if we subtract the remaining
-N's, $63732-1248\approx 62$\,kb.
+N's, $63732-1248\approx 62$\,kb. This is less than half of the 157\,kb
+we found in the pilot study, as our computation now uses twice as many
+targets and more closely related neighbors.
 #+end_export
 #+begin_src sh <<markers.sh>>=
 cres markers.fasta
@@ -99,7 +104,9 @@ input for \ty{primers3}, run \ty{primers3}, and save the result in
 #+begin_export latex
 We can now extract the primers and their scores from the output of
 \ty{primers3}. When we sort them by penalty, we find the best primers
-have the very low penalty of 0.01.
+have the low penalty of 0.01.---Not quite as low as the penalty for
+the pilot primers, $1.4\times 10^{-4}$, but we expect much better
+sensitivity and specificity for the new primer candidates.
 #+end_export
 #+begin_src sh <<markers.sh>>=
   prim2tab markers.prim |
@@ -113,18 +120,19 @@ have the very low penalty of 0.01.
 ...
 \end{verbatim}
 
-The primer candidates would next be tested \emph{in silico} for
-sensitivity and specificity on the \emph{E. coli} genomes used in the
-construction of \ty{eco2.nwk}. Primers with sufficient sensitivity and
-specificity could then be further tested on a comprehensive DNA
-database like \ty{nt} before moving on to \emph{in vitro} testing.
+We could next quantify the sensitivity and specificity of our primer
+candidates using our programs \ty{scop} and \ty{cops}. However, these
+require the installation of a large Blast database for reference, so
+we skip this step. Primers with sufficient sensitivity and specificity
+could then be further tested on a comprehensive DNA database like
+\ty{nt} before moving on to \emph{in vitro} testing.
 #+end_export
 #+begin_export latex
 We are finished with marker discovery, so we delete the files we don't
 need any more.
 #+end_export
 #+begin_src sh <<markers.sh>>=
-  rm -r all acc.txt eco2.nwk md5sum.txt ncbi_dataset \
-     ncbi_dataset.zip markers.db markers.prim neidb \
+  rm -r all acc.txt md5sum.txt ncbi_dataset \
+     ncbi_dataset.zip markers.db markers.prim \
      neighbors README.md targets
 #+end_src
