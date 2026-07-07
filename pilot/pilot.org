@@ -196,7 +196,7 @@ shows that this branch clearly separates O111:H8 from the other
 #+end_src
 #+begin_export latex
 \begin{verbatim}
-#Clade  Targets  Neighbors  Unknowns  Split (%)  Parent  Dist(Parent)
+#Clade  Targets  Neighbors  Unknowns  Split (%)  Parent  Dist...
 29      22       0          0         100.00     6       0.006
 \end{verbatim}
 #+end_export
