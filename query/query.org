@@ -139,7 +139,7 @@ hypothesize also belong to the same serotype.
 To check the serotypes of our target genomes, we extract the
 accessions of the 47 genomes in clade 4649 and match it to the list of
 serotypes: \ty{sero.txt}. This shows that indeed all 47 genomes in
-clade 4649 have are O111:H8. In other words, we have discovered and
+clade 4649 are O111:H8. In other words, we have discovered and
 additional 25 genomes that were not classified as O111:H8.
 #+end_export
 #+begin_src sh <<query.sh>>=
