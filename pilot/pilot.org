@@ -184,19 +184,20 @@ tree.
 #+begin_export latex
 Now we can find our target clade, 29, with the program
 \ty{fintac}. Its output tells us that clade 29 has a perfect ``split''
-in the sense that it contains only O111:H8 and its complement contains
-none. We also note that the distance to its parent is $6\times
-10^{-3}$ substitutions per site. This isn't a lot, but
-Figure~\ref{fig:o111} shows that this branch clearly separates O111:H8
-from the other \emph{E. coli} strains.
+in the sense that it contains only O111:H8. It also contains no
+``unknowns'', which we will learn more about in the next chapter. We
+also note that the distance to its parent is $6\times 10^{-3}$
+substitutions per site. This isn't a lot, but Figure~\ref{fig:o111}
+shows that this branch clearly separates O111:H8 from the other
+\emph{E. coli} strains.
 #+end_export
 #+begin_src sh <<Analyze phylogeny, Ch. \ref{ch:p}>>=
   fintac -t 991910 all.nwk
 #+end_src
 #+begin_export latex
 \begin{verbatim}
-#Clade  Targets  Neighbors  Split (%)  Parent  Dist(Parent)
-29      22       0          100.00     6       0.006
+#Clade  Targets  Neighbors  Unknowns  Split (%)  Parent  Dist(Parent)
+29      22       0          0         100.00     6       0.006
 \end{verbatim}
 #+end_export
 #+begin_export latex

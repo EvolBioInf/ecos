@@ -136,19 +136,17 @@ hypothesize also belong to the same serotype.
       grep -v '^#' -c
 #+end_src
 #+begin_export latex
-To check the serotypes of our target genomes, we join the 47 genomes
-in clade 4649 to the serotype list in \ty{sero.txt}. This shows that
-indeed all 47 genomes in clade 4649 have are O111:H8. In other words,
-we have discovered and additional 25 genomes that were not classified
-as O111:H8.
+To check the serotypes of our target genomes, we extract the
+accessions of the 47 genomes in clade 4649 and match it to the list of
+serotypes: \ty{sero.txt}. This shows that indeed all 47 genomes in
+clade 4649 have are O111:H8. In other words, we have discovered and
+additional 25 genomes that were not classified as O111:H8.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  sort sero.txt |
-      grep -v '^#' > t1.txt
   pickle 4649 eco2.nwk |
-      grep -v '^#' |
-      sort > t2.txt
-  join t*.txt
+      grep -v '^#' > O111.txt
+
+  grep -f O111.txt sero.txt
 #+end_src
 #+begin_export latex
 \begin{verbatim}
@@ -159,9 +157,8 @@ as O111:H8.
 991910_GCF_050705825.1 O111:H8
 \end{verbatim}
 
-We've reached the end of the query section, so we remove the two files
-used in the join as we don't need them any more.
+We've reached the end of the query section, so we remove the list of O111:H8 accessions.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  rm t1.txt t2.txt
+rm O111.txt
 #+end_src
