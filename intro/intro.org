@@ -9,35 +9,100 @@ strains.
 The classification of bacterial genomes below the species rank is the
 topic of our forthcoming manuscript entitled \textit{Classifying
   Bacterial Genomes Below the Species Rank}. In this accompanying
-tutorial we also show how to detect the genomes of a particular target
-organism, \emph{Escherichia coli} serotype O111:H8. Serotype O111:H8
-belongs to the ``Big Six'' of food-borne pathogenic \emph{E. coli}
-that are associated world-wide with disease outbreaks ranging from
-gastroenteritis and bloody diarrhea to potentially fatal
-complications, such as acute encephalopathy. One possible use of
-genome classification below is to extract diagnostic markers from the
-genomes, and we show how to do that for O111:H8.
+tutorial we show the computations required for classifying bacterial
+genomes within species. Our focus is no \emph{Escherichia coli}, one
+of the most intensively sequenced bacterial taxa, which contains both
+commensal and pathogenic strains.
 
-Since \emph{E. coli} is one of the most intensively sequenced
-bacterial taxa, we shall analyze over 7,000 genomes, which takes
-perhaps an hour. And while this may seem quick when analyzing all
-\emph{E. coli} genomes, any computational workflow with this kind of
-run time is difficult to construct, amend, and maintain.
+Taxa are labeled by taxon-IDs. So if you now change into the directory
+\ty{tutorial} inside the \ty{ecos} repository, we can look up the
+taxon-ID of \emph{E. coli} by looking for an exact match (\ty{-e})
+between ``Escherichia coli'' and the entries in the taxonomy database,
+\ty{neidb}. We find that the taxon-ID of \emph{E. coli} is 562, that
+of its parent 561.
+#+end_export
+#+begin_src bash <<intro.sh>>=
+  taxi -e "Escherichia coli" neidb
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+562  561     Escherichia coli
+\end{verbatim}
+#+end_export
+#+begin_export latex
+To get an overview of the \emph{E. coli} genomes, we draw the tree of
+all ranks in that species and how many complete genomes each one
+contains. That tree is drawn in \ty{dot} notation, which we can render
+with the program \ty{dot} whose output can in turn be drawn with
+\ty{imv-x11} to get Figure~\ref{fig:ranks}. It shows that 92.9\,\% of
+\emph{E. coli} genomes are only classified at the species rank.
+\begin{figure}
+  \begin{center}
+    \resizebox{0.9\textwidth}{!}{\includegraphics{../intro/ranks}}
+  \end{center}
+  \caption{The distribution of complete genomes among the taxonomic
+    ranks of \emph{E. coli}.}\label{fig:ranks}
+\end{figure}
+#+end_export
+#+begin_src bash <<intro.sh>>=
+  ranks -L complete 562 neidb |
+      dot -T svg |
+      imv-x11 -
+#+end_src
+#+begin_export latex
+The ranks tree tells us little about the distribution of genomes among
+specific taxa. For this we use \ty{dree} to list the recursive
+(\ty{-r}) counts of complete genomes among the \emph{E. coli} taxa
+listed with names (\ty{-n}). We extract the taxa with at least 10
+genomes to get a table similar to Table~\ref{tab:taxa}.
+\begin{table}
+  \caption{The \emph{E. coli} taxa with at least 10 complete genomes
+    in their subtree.}\label{tab:taxa}
+  \begin{center}
+    \begin{tabular}{rllrl}
+      Taxo-ID & Parent & Rank & Genomes & Name\\\hline
+      \input{../intro/taxa}\\\hline
+    \end{tabular}
+  \end{center}
+\end{table}
+#+end_export
+#+begin_src bash <<intro.sh>>=
+  dree -r -n -L complete -l 562 neidb |
+      tail -n +2 |
+      sed 's/o /o_/' |
+      sort -k 4 -n -r |
+      awk '$4>=10'
+#+end_src
+#+begin_export latex
+As shown in Table~\ref{tab:taxa}, there are 7,884 complete
+\emph{E. coli}. Notorious pathogen O157:H7 is the strain with most
+genomes, 171, followed by the commensal K-12 taxon 83333 with 65
+genomes. Notice that these contain the 29 genomes of its K-12 child
+taxon 511145. The two K-12 entries are followed by 4 pathogens,
+O111:H8, O25b:H4-ST131, O16:H48, and O145 with a combined 69 genomes.
 
-We therefore begin this tutorial in Chapter~\ref{ch:p} with a pilot
+Analyzing the 7,884 \emph{E. coli} genomes takes perhaps an hour. And
+while this is quick considering the amounts of data involved, any
+computational workflow with this kind of run time is difficult to
+construct, amend, and maintain.
+
+We therefore continue this tutorial in Chapter~\ref{ch:p} with a pilot
 study on how to construct a phylogeny from a sample of 50 complete
-\emph{E. coli} genomes that contains the 22 O111:H8 genomes that were
-in Genbank on 17th June 2026 and 28 closely related genomes.  In
-Chapter~\ref{ch:q} we show how to query a precomputed phylogeny of
-7,386 \emph{E. coli} genomes to identify all available genomes of
-O111:H8.  This complete sample turns out to contain not only the
-original 22 O111:H8, but an additional 25 genomes hitherto not
-classified as O111:H8.
+\emph{E. coli} genomes that contains the 22 O111:H8 genomes listed in
+Table~\ref{tab:taxa} and 28 closely related genomes.
 
-The individual computations necessary for this workflow take no more
-than a few seconds on a consumer-grade laptop thus avoiding the
-lengthy wait for the underlying distance computation. In
-Chapter~\ref{ch:m}, finally, the 47 genomes of \emph{E. coli} O111:H8
-identified in Chapter~\ref{ch:q} are used to construct diagnostic PCR
-primers for that serotype.
+In Chapter~\ref{ch:q} we show how to query a precomputed phylogeny of
+all \emph{E. coli} genomes to identify the complete sample of
+available O111:H8 genomes. This complete sample turns out to contain
+not only the original 22 O111:H8, but an additional 25 genomes,
+yielding a total of 47 O111:H8 genomes.
+
+In addition to O111:H8, we also query the complete tree for the other
+five distinct taxa below species rank listed in Table~\ref{tab:taxa},
+O157:H7, K-12, O25b:H4-ST131, O16:H48, and O145. Like for O111:H8, we
+find additional genomes for each of these taxa.
+
+In Chapter~\ref{ch:m}, finally, the 47 genomes of \emph{E. coli}
+O111:H8 identified in Chapter~\ref{ch:q} are used to construct
+diagnostic PCR primers for that serotype.
 #+end_export

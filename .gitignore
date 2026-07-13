@@ -1,3 +1,4 @@
+*~
 data
 doc/*.aux
 doc/*.bbl
@@ -14,6 +15,8 @@ doc/markers.tex
 doc/version.txt
 doc/date.txt
 free
+intro/*
+!intro/intro.org
 pilot/*
 !pilot/all.ps
 !pilot/Makefile
@@ -24,6 +27,7 @@ query/*
 !query/query.org
 !query/eco2.ps
 tutorial
+!tutorial/intro.sh
 !tutorial/pilot.sh
 !tutorial/query.sh
 !tutorial/markers.sh

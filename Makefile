@@ -4,7 +4,7 @@ data:
 	tar -xvjf data_o111h8.tbz
 	make -C data
 	rm data_o111h8.tbz
-tutorial: data pilot/pilot.sh query/query.sh markers/markers.sh scripts/rename.sh data/neidb data/eco.nwk data/eco.json data/sero.txt
+tutorial: data data/eco.json data/eco.nwk data/neidb data/sero.txt intro/intro.sh markers/markers.sh pilot/pilot.sh query/query.sh scripts/rename.sh
 	test -d tutorial || mkdir tutorial
 	cp pilot/pilot.sh tutorial/
 	cp query/query.sh tutorial/
@@ -19,6 +19,8 @@ query/query.sh:
 	make -C query
 markers/markers.sh:
 	make -C markers
+intro/intro.sh:
+	make -C intro
 scripts/rename.sh:
 	test -d free || git clone https://github.com/evolbioinf/free
 	cp free/aux/rename.sh scripts/
@@ -28,6 +30,7 @@ setup:
 	bash scripts/setup.sh
 clean:
 	make clean -C data
+	make clean -C intro
+	make clean -C markers
 	make clean -C pilot
 	make clean -C query
-	make clean -C markers
