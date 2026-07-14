@@ -15,8 +15,8 @@ doc/markers.tex
 doc/version.txt
 doc/date.txt
 free
-intro/*
-!intro/intro.org
+intro/intro.sh
+intro/neidb
 pilot/*
 !pilot/all.ps
 !pilot/Makefile

@@ -19,14 +19,16 @@ Taxa are labeled by taxon-IDs and we begin this tutorial by looking up
 the taxon-ID of \emph{E. coli}. So if you now change into the
 directory \ty{tutorial} inside the \ty{ecos} repository, we can use
 the program \ty{taxi} in exact matching mode to find that the taxon-ID
-of \emph{E. coli} is 562, that of its parent 561.
+of \emph{E. coli} is 562, that of its parent, the genus
+\emph{Escherichia}, is 561.
 #+end_export
 #+begin_src bash <<intro.sh>>=
   taxi -e "Escherichia coli" neidb
 #+end_src
 #+begin_export latex
 \begin{verbatim}
-562  561     Escherichia coli
+# ID   Parent  Name
+  561  543     Escherichia
 \end{verbatim}
 #+end_export
 #+begin_export latex
