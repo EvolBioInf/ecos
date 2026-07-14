@@ -8,8 +8,8 @@ that need to be distinguished for effective treatment and
 surveillance.
 
 The classification of bacterial genomes below the species rank is the
-topic of our forthcoming manuscript entitled \textit{Classifying
-  Bacterial Genomes Below the Species Rank}. In this accompanying
+topic of our forthcoming manuscript entitled \textit{Classifying the
+  Genomes of \emph{E. coli} strains}. In this accompanying
 tutorial we show the required computations. Our focus is no
 \emph{Escherichia coli}, one of the most intensively sequenced
 bacterial taxa, which contains commensals and numerous well-known
