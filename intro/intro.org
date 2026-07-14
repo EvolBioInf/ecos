@@ -3,23 +3,23 @@ Bacterial genome sequencing is now routine in many clinical
 settings. To make the best use of the resulting wealth of sequence
 data, it needs to be correctly classified. However, the vast majority
 of bacterial strains are only classified down to the species rank,
-which in many cases comprises various commensal and pathogenic
-strains.
+which in many cases includes multiple commensal and pathogenic strains
+that need to be distinguished for effective treatment and
+surveillance.
 
 The classification of bacterial genomes below the species rank is the
 topic of our forthcoming manuscript entitled \textit{Classifying
   Bacterial Genomes Below the Species Rank}. In this accompanying
-tutorial we show the computations required for classifying bacterial
-genomes within species. Our focus is no \emph{Escherichia coli}, one
-of the most intensively sequenced bacterial taxa, which contains both
-commensal and pathogenic strains.
+tutorial we show the required computations. Our focus is no
+\emph{Escherichia coli}, one of the most intensively sequenced
+bacterial taxa, which contains commensals and numerous well-known
+pathogenic strains.
 
-Taxa are labeled by taxon-IDs. So if you now change into the directory
-\ty{tutorial} inside the \ty{ecos} repository, we can look up the
-taxon-ID of \emph{E. coli} by looking for an exact match (\ty{-e})
-between ``Escherichia coli'' and the entries in the taxonomy database,
-\ty{neidb}. We find that the taxon-ID of \emph{E. coli} is 562, that
-of its parent 561.
+Taxa are labeled by taxon-IDs and we begin this tutorial by looking up
+the taxon-ID of \emph{E. coli}. So if you now change into the
+directory \ty{tutorial} inside the \ty{ecos} repository, we can use
+the program \ty{taxi} in exact matching mode to find that the taxon-ID
+of \emph{E. coli} is 562, that of its parent 561.
 #+end_export
 #+begin_src bash <<intro.sh>>=
   taxi -e "Escherichia coli" neidb
@@ -30,13 +30,18 @@ of its parent 561.
 \end{verbatim}
 #+end_export
 #+begin_export latex
-To get an overview of the \emph{E. coli} genomes, we draw the tree of
-all ranks in that species and how many complete genomes each one
-contains. That tree is drawn in \ty{dot} notation, which we can render
-with the program \ty{dot} whose output can in turn be drawn with
-\ty{imv-x11} to get Figure~\ref{fig:ranks}. It shows that 92.9\,\% of
+To get an overview of the \emph{E. coli} genomes currently available
+in Genbank, we draw the tree of all ranks in that species and how many
+genomes each one contains. Genomes are assembled to one of four
+quality levels, complete, chromosome, scaffold, or conting, in that
+order. We restrict our analysis to the ``best'' genomes, those
+assembled to level ``complete''. The tree of complete genomes per rank
+is specified in \ty{dot} notation, which we can render with the
+program \ty{dot}, whose output can in turn be drawn with \ty{imv-x11}
+to get Figure~\ref{fig:ranks}. It shows that 92.9\,\% of complete
 \emph{E. coli} genomes are only classified at the species rank.
 \begin{figure}
+  \input{../intro/ranksLabels.tex}
   \begin{center}
     \resizebox{0.9\textwidth}{!}{\includegraphics{../intro/ranks}}
   \end{center}
@@ -50,24 +55,28 @@ with the program \ty{dot} whose output can in turn be drawn with
       imv-x11 -
 #+end_src
 #+begin_export latex
-The ranks tree tells us little about the distribution of genomes among
-specific taxa. For this we use \ty{dree} to list the recursive
-(\ty{-r}) counts of complete genomes among the \emph{E. coli} taxa
-listed with names (\ty{-n}). We extract the taxa with at least 10
-genomes to get a table similar to Table~\ref{tab:taxa}.
+The ranks in the tree in Figure~\ref{fig:ranks} tell us little about
+the distribution of genomes among specific strains. For this we use
+\ty{dree} to list (\ty{-l}) the names (\ty{-n}) and the recursive
+(\ty{-r}) counts of complete (\ty{-L}) genomes among the
+\emph{E. coli} taxa listed with names (\ty{-n}). We extract the taxa
+with at least 10 genomes to get a table similar to
+Table~\ref{tab:taxa}.
 \begin{table}
-  \caption{The \emph{E. coli} taxa with at least 10 complete genomes
+  \caption{The eight \emph{E. coli} taxa with at least 10 complete genomes
     in their subtree.}\label{tab:taxa}
   \begin{center}
-    \begin{tabular}{rllrl}
-      Taxo-ID & Parent & Rank & Genomes & Name\\\hline
+    \rput(1.01\textwidth,0.3cm){\Huge\}}
+    \begin{tabular}{crllrl}
+      \hline
+      \# & Taxon-ID & Parent & Rank & Genomes & Name\\\hline
       \input{../intro/taxa}\\\hline
     \end{tabular}
   \end{center}
 \end{table}
 #+end_export
 #+begin_src bash <<intro.sh>>=
-  dree -r -n -L complete -l 562 neidb |
+  dree -n -r -L complete -l 562 neidb |
       tail -n +2 |
       sed 's/o /o_/' |
       sort -k 4 -n -r |
@@ -75,10 +84,11 @@ genomes to get a table similar to Table~\ref{tab:taxa}.
 #+end_src
 #+begin_export latex
 As shown in Table~\ref{tab:taxa}, there are 7,884 complete
-\emph{E. coli}. Notorious pathogen O157:H7 is the strain with most
-genomes, 171, followed by the commensal K-12 taxon 83333 with 65
-genomes. Notice that these contain the 29 genomes of its K-12 child
-taxon 511145. The two K-12 entries are followed by 4 pathogens,
+\emph{E. coli} genomes. Notorious pathogen O157:H7 is the strain with
+most sequenced genomes, 171, followed by the commensal K-12 taxon
+83333 with 65 genomes. These 65 genomes contain the 29 genomes of its
+K-12 child taxon 511145. The two bracketed K-12 entries in
+Table~\ref{tab:taxa} are followed by four well-known pathogens,
 O111:H8, O25b:H4-ST131, O16:H48, and O145 with a combined 69 genomes.
 
 Analyzing the 7,884 \emph{E. coli} genomes takes perhaps an hour. And
@@ -89,7 +99,7 @@ construct, amend, and maintain.
 We therefore continue this tutorial in Chapter~\ref{ch:p} with a pilot
 study on how to construct a phylogeny from a sample of 50 complete
 \emph{E. coli} genomes that contains the 22 O111:H8 genomes listed in
-Table~\ref{tab:taxa} and 28 closely related genomes.
+line 5 of Table~\ref{tab:taxa} and 28 closely related genomes.
 
 In Chapter~\ref{ch:q} we show how to query a precomputed phylogeny of
 all \emph{E. coli} genomes to identify the complete sample of

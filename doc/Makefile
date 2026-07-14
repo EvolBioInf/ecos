@@ -2,7 +2,7 @@ date = $(shell git log | grep -m 1 Date | sed -r 's/Date: +[A-Z][a-z]+ ([A-Z][a-
 version = $(shell git describe)
 docs = ~/WinHome/ownCloud/docs
 nw = $(shell which noweb)
-src = intro.tex pilot.tex query.tex markers.tex
+src = intro.tex pilot.tex query.tex markers.tex ../intro/ranksLabels.tex
 all: $(src) ecos.pdf
 %.tex:	../*/%.org
 	bash ../scripts/org2nw $< | noweave -n -x > $@
