@@ -1,5 +1,5 @@
 #+begin_export latex
-Our working directory is \ty{tutorial} inside the \ty{o111h8} repo.
+Our working directory remains \ty{tutorial} inside the \ty{ecos} repo.
 We focus on \emph{E. coli} serotype O111:H8, which we analyze in four
 steps. We get its genomes and that of some of its close relatives,
 rename the genome files, calculate the genome phylogeny, and analyze
@@ -72,26 +72,19 @@ categories below the species rank.
 #+end_src
 #+begin_export latex
 For our pilot analysis we pick all 22 target genomes and the first 28
-neighbor genomes listed, a total of 50, and store them in a file of
-accessions and taxa, \ty{accTax.txt}.
+neighbor genomes listed, a total of 50, extract their accessions and
+store them in \ty{acc.txt}.
 #+end_export
 #+begin_src sh <<Get genomes, Ch. \ref{ch:p}>>=
   neighbors -l -L complete -t 991910 neidb |
       grep '^[tn]' |
-      head -n 50 > accTax.txt
-#+end_src
-#+begin_export latex
-To prepare for downloading the genome sequences corresponding to the
-accessions we just saved, we extract their accessions into a separate
-file, \ty{acc.txt}.
-#+end_export
-#+begin_src sh <<Get genomes, Ch. \ref{ch:p}>>=
-  awk '{print $2}' accTax.txt > acc.txt
+      awk '{print $2}' |
+      head -n 50 > acc.txt
 #+end_src
 #+begin_export latex
 We use the program \ty{datasets} to download the genomes in
-``dehydrated'' form excluding any ``atypical'' genomes the sample
-might contain.
+\ty{acc.txt} in ``dehydrated'' form excluding any ``atypical'' genomes
+the sample might contain.
 #+end_export
 #+begin_src sh <<Get genomes, Ch. \ref{ch:p}>>=
   datasets download genome accession \
@@ -109,7 +102,7 @@ downloads the actual genome sequences.
 #+end_src
 #+begin_export latex
 The files we have downloaded are contained in subdirectories and have
-rather long names with redundant information, for example
+rather long names, for example
 \begin{verbatim}
 GCF_000981485.1_EcoliK12AG100_genomic.fna
 \end{verbatim}
@@ -132,8 +125,7 @@ For renaming, we run the script \ty{rename.sh}.
 We check the renaming worked.
 #+end_export
 #+begin_src sh <<Rename genome files, Ch. \ref{ch:p}>>=
-  ls all |
-      head
+  ls all | head
 #+end_src
 #+begin_export latex
 \begin{verbatim}
@@ -274,7 +266,6 @@ the very low penalty of $1.4\times 10^{-4}$.
       head
 #+end_src
 #+begin_export latex
-We find that the best primer pair has a penalty of
 \begin{verbatim}
 # Penalty  Forward               Reverse               ...
 0.000142   CACCATAATTCTGGGCTACG  CCGCCATACAATCCAGTTAG  ...
@@ -289,7 +280,7 @@ directory, while keeping the putative markers we found in
 \ty{markers.fasta}.
 #+end_export
 #+begin_src sh <<pilot.sh>>=
-  rm -r accTax.txt acc.txt all all.nwk md5sum.txt \
+  rm -r acc.txt all all.nwk md5sum.txt \
      ncbi_dataset ncbi_dataset.zip neighbors \
      pilot.db README.md targets
 #+end_src
