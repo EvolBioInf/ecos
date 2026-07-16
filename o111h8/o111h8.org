@@ -1,0 +1,88 @@
+#+begin_export latex
+There are 22 genomes in Genbank classified as O111:H8.
+#+end_export
+#+begin_src bash <<o111h8.sh>>=
+  dree -L complete -l -n -g 991910 neidb
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+# Taxid  Parent  Rank     Genomes  Name
+991910   562     no rank  22       Escherichia coli O111:H8
+\end{verbatim}
+#+end_export
+#+begin_export latex
+All 22 have ended up in our grand tree.
+#+end_export
+#+begin_src sh <<o111h8.sh>>=
+  pickle 1 eco2.nwk |
+      grep -c 991910_
+#+end_src
+#+begin_export latex
+We use \ty{fintac} to find the clade with the largest split between
+O111:H8 genomes and the rest. By default, any taxon that is not a
+target is classified as neighbor. However, we can use \ty{-u 562} to
+assert that taxa classified as \emph{E.~coli} are ``unknown''. With
+these parameters, \ty{fintac} returns 5379 as target clade together
+with its parent, 5377.
+#+end_export
+#+begin_src sh <<o111h8.sh>>=
+  fintac -t 991910_ -u 562_ eco2.nwk
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+#Clade  Targets  Neighbors  Unknowns  Split (%)  Parent  Dist...
+5379    22       8          17        98.53      5377    0.000413
+\end{verbatim}
+
+To put our target clade, 5379, in context, we plot the subtree rooted
+on its parent, 5377, without the labels of the internal nodes.
+Figure~\ref{fig:all} shows this tree with the putative O111:H8 genomes
+marked $T$ for \emph{target}, and its two closest relatives marked $N$
+for \emph{neighbors}.
+\begin{figure}
+  \begin{center}
+    \rput(3.8,1.7){$T$}
+    \rput(3.8,0.6){$N$}
+    \includegraphics{../query/eco2}
+  \end{center}
+  \caption{The 47 complete target genomes of \emph{Escherichia coli}
+    O111:H8, $T$, in the context of its closest relatives, the two
+    neighbors in clade $N$.}\label{fig:all}
+\end{figure}
+#+end_export
+#+begin_src sh <<o111h8.sh>>=
+  pickle -t 5377 eco2.nwk |
+      land -r |
+      plotTree
+#+end_src
+#+begin_export latex
+We count 47 complete genomes in clade 5379, 22 known O111:H8 and 27
+that we hypothesize also belong to the same serotype.
+#+end_export
+#+begin_src sh <<o111h8.sh>>=
+  pickle 5379 eco2.nwk |
+      grep -v '^#' -c
+#+end_src
+#+begin_export latex
+To check the serotypes of our target genomes, we extract their
+accessions and match them to the list of serotypes in
+\ty{sero.txt}. This shows that indeed all 47 genomes in clade 5379 are
+O111:H8. In other words, we have looked up an additional 25 genomes
+that were not classified as O111:H8.
+#+end_export
+#+begin_src sh <<o111h8.sh>>=
+  pickle 5379 eco2.nwk |
+      grep -f - sero.txt
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+1055542_GCF_003112245.1 O111:H8
+168927_GCF_007990655.1  O111:H8
+373045_GCF_005037805.1  O111:H8
+...
+991910_GCF_050705825.1 O111:H8
+\end{verbatim}
+We have finished querying the \emph{E. coli} tree for O111:H8, but
+return to that strain in Chapter~\ref{ch:m} as an example for marker
+construction from targets and neighbors.
+#+end_export

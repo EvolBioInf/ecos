@@ -1,0 +1,6 @@
+#+begin_export latex
+K12
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  echo "Hello k12"
+#+end_src

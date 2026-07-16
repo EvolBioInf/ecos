@@ -1,0 +1,6 @@
+#+begin_export latex
+O16:H48
+#+end_export
+#+begin_src bash <<o16h48.sh>>=
+  echo "Hello O16:H48"
+#+end_src

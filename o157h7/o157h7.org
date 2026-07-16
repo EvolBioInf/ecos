@@ -1,0 +1,204 @@
+#+begin_export latex
+We look up the 171 genomes O157:H7 genomes listed in
+Table~\ref{tab:taxa}. Out of these, 161 are directly classified as
+O157:H7, the remaining 10 are distributed among eight subtaxa of
+O157:H7.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  dree -L complete -l -n -g 83334 neidb
+#+end_src
+#+begin_export latex
+\small
+\begin{verbatim}
+# Taxid  Parent  Rank     Genomes  Name
+83334    562     no rank  161      Escherichia coli O157:H7
+155864   83334   strain   3        Escherichia coli O157:H7 str. EDL933
+386585   83334   strain   1        Escherichia coli O157:H7 str. Sakai
+444450   83334   strain   1        Escherichia coli O157:H7 str. EC4115
+544404   83334   strain   1        Escherichia coli O157:H7 str. TW14359
+996639   83334   strain   1        Escherichia coli O157:H7 str. EC10
+1328859  83334   strain   1        Escherichia coli O157:H7 str. SS17
+1330457  83334   strain   1        Escherichia coli O157:H7 str. SS52
+1343836  83334   strain   1        Escherichia coli O157:H7 str. F8092B
+\end{verbatim}
+\normalsize
+We would like to count the genomes of O157:H7 that have ended up in
+our tree. For this we store the taxa of O157:H7 in file
+\ty{o157h7.txt}.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  dree -L complete -l -n -g 83334 neidb |
+      awk '!/^#/{printf "%s_\n", $1}' > o157h7.txt
+#+end_src
+#+begin_export latex
+We count the nine taxa we have just stored.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  wc -l o157h7.txt
+#+end_src
+#+begin_export latex
+Now we store the members of these taxa in file \ty{o157h7\_2.txt}
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  pickle 1 eco2.nwk |
+      grep -f o157h7.txt > o157h7_2.txt
+#+end_src
+#+begin_export latex
+There are 170 genomes of O157:H7 in our tree.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  wc -l o157h7_2.txt
+#+end_src
+#+begin_export latex
+We have seen that O157:H7 has eight subtaxa, so we run \ty{fintac}
+with hierarchical matching. This means that a taxon that is in the
+taxonomic subtree rooted on the target is also classified as a
+target. So hierarchical matching requires the taxonomy information
+contained in the Neighbors database. Hence the option for hierarchical
+matching, \ty{-H}, takes \ty{neidb} as argument. We find that clade
+3131 contains O157:H7. Apart from 167 known O157:H7 genomes, it
+contains 12 genomes classified as not belonging to O157:H7, the
+neighbors, and 191 genomes just classified as \emph{E. coli}, the
+unknowns, summing to 370 genomes.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  fintac -H neidb -t 83334_ -u 562_ eco2.nwk
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+#Clade  Targets  Neighbors  Unknowns  Split (%)  Parent  Dist...
+3131    167      12         191       97.24      3130    0.000358
+\end{verbatim}
+#+end_export
+#+begin_export latex
+Since there were initially 170 taxonomic targets, but clade 3131
+contains only 167, three targets might be mislabeled. Let's test that
+by looking up the serotypes of the three genomes outside of clade 3131
+classified as O157:H7. We find that, indeed, two of them are not
+O157:H7, but one is, *003722195.1.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  pickle -c 3131 eco2.nwk |
+      grep -f o157h7_2.txt |
+      grep -f - sero.txt
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+83334_GCA_011068385.1	O15:H18
+83334_GCF_003722195.1	O157:H7
+996639_GCF_022558925.1	O39:H23
+\end{verbatim}
+#+end_export
+#+begin_export latex
+To investigate the stray genome, *003722195.1, we look up its most
+recent common ancestor with node 3131, which is node 3119.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  mrca "^3131$|_003722195" eco2.nwk
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+MRCA 3119
+#Type   n
+Start   2
+\end{verbatim}
+#+end_export
+#+begin_export latex
+We plot the tree rooted on 3119 and for better legibility remove its
+leaf labels. In Figure~\ref{fig:3119} we also collapsed two nodes
+containing $n=365$ and $n=128$ taxa to fit the tree on the page, and
+removed most of the remaining internal node labels. The stray genome
+must be located in clade 3500, while O157:H7 is contained in the other
+child of 3119, 3120. The long branch separating 3120 from 3119 shows
+that the stray genome is no ordinary O157:H7.
+\begin{figure}
+  \begin{center}
+    \input{../o157h7/3119Labels}
+    \includegraphics{../o157h7/3119}
+  \end{center}
+  \caption{\emph{E. coli} subtree rooted on node 3119 with two
+    collapsed nodes, $n=x$, some of the internal node labels omitted,
+    and no leaf labels.}\label{fig:3119}
+\end{figure}
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  pickle -t 3119 eco2.nwk |
+      land -l |
+      plotTree
+#+end_src
+#+begin_export latex
+When we look up the sequence types of the 370 strains in clade 3131,
+we can see that with the exception of four genomes they are ST11.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  pickle 3131 eco2.nwk |
+      grep -f o157h7_2.txt |
+      grep -f - mlst.txt |
+      awk '$2!="11"'
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+83334_GCF_013167275.1	5560
+83334_GCF_013167795.1	5516
+83334_GCF_017165115.1	-
+83334_GCF_020423185.1	7816
+\end{verbatim}
+As expected from the phylogeny in Figure~\ref{fig:3119}, the sequence
+type of *003722195.1 is also not ST11 but ST717.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  grep 003722195.1 mlst.txt
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+83334_GCF_003722195.1	717
+\end{verbatim}
+Figure~\ref{fig:3119} further begs the question whether the true
+O157:H7 clade might be one of the two near ancestral nodes of 3131,
+3130 and 3120. Clade 3130 indeed adds another O157:H7.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  pickle -t 3130 eco2.nwk |
+      pickle -c 3131 |
+      grep -f - sero.txt
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+562_GCF_052884615.1	O157:H7
+\end{verbatim}
+#+end_export
+#+begin_export latex
+However, it is not ST11 but ST11458.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  pickle -t 3130 eco2.nwk |
+      pickle -c 3131 |
+      grep -f - mlst.txt
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+562_GCF_052884615.1	11458
+\end{verbatim}
+Node 3120 adds no O157:H7, but a clade of O55:H7.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  pickle -t 3120 eco2.nwk |
+      pickle -c 3130 |
+      grep -f - sero.txt
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+1048689_GCF_000245515.1	O55:H7
+...
+701177_GCF_000025165.1	O55:H7
+\end{verbatim}
+#+end_export
+#+begin_export latex
+Finally, none of the genomes in 3120 are ST11, but predominantly
+ST335.
+#+end_export
+#+begin_src bash <<o157h7.sh>>=
+  pickle -t 3120 eco2.nwk |
+      pickle -c 3130 |
+      grep -f - mlst.txt
+#+end_src

@@ -66,12 +66,13 @@ with at least 10 genomes to get a table similar to
 Table~\ref{tab:taxa}.
 \begin{table}
   \caption{The eight \emph{E. coli} taxa with at least 10 complete genomes
-    in their subtree.}\label{tab:taxa}
+    in their subtree ordered by initial genome count.}\label{tab:taxa}
   \begin{center}
     \rput(1.01\textwidth,0.3cm){\Huge\}}
-    \begin{tabular}{crllrl}
+    \begin{tabular}{crllrrl}
       \hline
-      \# & Taxon-ID & Parent & Rank & Genomes & Name\\\hline
+      &&&&\multicolumn{2}{c}{Genomes}\\\hline
+      \# & Taxon-ID & Parent & Rank & Initial & Final & Name\\\hline
       \input{../intro/taxa}\\\hline
     \end{tabular}
   \end{center}
@@ -107,7 +108,7 @@ In Chapter~\ref{ch:q} we show how to query a precomputed phylogeny of
 all \emph{E. coli} genomes to identify the complete sample of
 available O111:H8 genomes. This complete sample turns out to contain
 not only the original 22 O111:H8, but an additional 25 genomes,
-yielding a total of 47 O111:H8 genomes.
+yielding a total of 47 O111:H8 genomes (Table~\ref{tab:taxa}).
 
 In addition to O111:H8, we also query the complete tree for the other
 five distinct taxa below species rank listed in Table~\ref{tab:taxa},

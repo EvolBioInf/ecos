@@ -1,6 +1,6 @@
 #+begin_export latex
 We stay in our working directory \ty{tutorial} inside the repo
-\ty{o111h8}. In Chapter~\ref{ch:q} we identified all genomes of our
+\ty{ecos}. In Section~\ref{sec:o111h8} we identified all genomes of our
 target O111:H8 and placed them in the context of its closest
 relatives, the two neighbors shown in Figure~\ref{fig:all}. This means
 we can construct markers for the target genomes by identifying the
@@ -11,7 +11,7 @@ From our \emph{E.~coli} tree we get the 49 genome accessions of the
 taxa in Figure~\ref{fig:all}.
 #+end_export
 #+begin_src sh <<markers.sh>>=
-  pickle 4647 eco2.nwk |
+  pickle 5377 eco2.nwk |
       grep -v '^#' |
       sed 's/[^_]*_//' > acc.txt
 #+end_src
@@ -48,8 +48,8 @@ genomes into it.
 #+end_export
 #+begin_src sh <<markers.sh>>=
   mkdir targets
-  pickle -t 4647 eco2.nwk |
-      pickle 4649 |
+  pickle -t 5377 eco2.nwk |
+      pickle 5379 |
       grep -v '^#' |
       while read name; do
 	  ln -s $(pwd)/all/${name} targets/${name}.fasta
@@ -61,8 +61,8 @@ Similarly, we link the neighbors genomes into the directory
 #+end_export
 #+begin_src sh <<markers.sh>>=
   mkdir neighbors
-  pickle -t 4647 eco2.nwk |
-      pickle -c 4649 |
+  pickle -t 5377 eco2.nwk |
+      pickle -c 5379 |
       grep -v '^#' |
       while read name; do
 	  ln -s $(pwd)/all/${name} neighbors/${name}.fasta

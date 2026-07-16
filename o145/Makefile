@@ -1,4 +1,4 @@
-prog=query
+prog=o145
 all: $(prog).sh
 
 $(prog).sh: $(prog).org
@@ -6,4 +6,4 @@ $(prog).sh: $(prog).org
 test: clean $(prog).sh
 	bash $(prog).sh
 clean:
-	rm -rf all.nwk neidb $(prog).sh t1.txt t2.txt
+	rm -f $(prog).sh
