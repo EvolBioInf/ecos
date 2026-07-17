@@ -68,10 +68,9 @@ Table~\ref{tab:taxa}.
   \caption{The eight \emph{E. coli} taxa with at least 10 complete genomes
     in their subtree ordered by initial genome count.}\label{tab:taxa}
   \begin{center}
-    \rput(1.01\textwidth,0.3cm){\Huge\}}
     \begin{tabular}{crllrrl}
       \hline
-      &&&&\multicolumn{2}{c}{Genomes}\\\hline
+      &&&&\multicolumn{2}{c}{Genomes}\\\cline{5-6}
       \# & Taxon-ID & Parent & Rank & Initial & Final & Name\\\hline
       \input{../intro/taxa}\\\hline
     \end{tabular}
