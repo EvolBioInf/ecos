@@ -1,8 +1,7 @@
 #+begin_export latex
-We look up the 171 genomes O157:H7 genomes listed in
-Table~\ref{tab:taxa}. Out of these, 161 are directly classified as
-O157:H7, the remaining 10 are distributed among eight subtaxa of
-O157:H7.
+We look up the 171 O157:H7 genomes listed in Table~\ref{tab:taxa}. Out
+of these, 161 are directly classified as O157:H7, the remaining 10 are
+distributed among eight subtaxa of O157:H7.
 #+end_export
 #+begin_src bash <<o157h7.sh>>=
   dree -L complete -l -n -g 83334 neidb
