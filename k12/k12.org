@@ -1,6 +1,121 @@
 #+begin_export latex
-K12
+We look up the 65 K-12 genomes listed in Table~\ref{tab:taxa}, of
+which 21 are classified as K-12 proper and the remaining 44 are
+distributed among subtaxa of K-12.
 #+end_export
 #+begin_src bash <<k12.sh>>=
-  echo "Hello k12"
+  dree -L complete -l -n -g 83333 neidb
+#+end_src
+#+begin_export latex
+\footnotesize
+\begin{verbatim}
+# Taxid  Parent  Rank     Genomes  Name
+83333    562     strain   21       Escherichia coli K-12
+316385   83333   no rank  1        Escherichia coli str. K-12 substr. DH10B
+316407   83333   no rank  3        Escherichia coli str. K-12 substr. W3110
+511145   83333   no rank  29       Escherichia coli str. K-12 substr. MG1655
+595496   83333   no rank  1        Escherichia coli BW2952
+679895   83333   no rank  4        Escherichia coli BW25113
+1110693  83333   no rank  4        Escherichia coli str. K-12 substr. MDS42
+1245474  83333   no rank  1        Escherichia coli ER2796
+1403831  83333   no rank  1        Escherichia coli str. K-12 substr. MC4100
+\end{verbatim}
+\normalsize
+We store these K-12 taxa in the file \ty{k12.txt}.
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  dree -L complete -l -n -g 83333 neidb |
+      awk '!/^#/{printf "%s_\n", $1}' > k12.txt
+#+end_src
+#+begin_export latex
+We make sure we have stored the expected nine taxa in \ty{k12.txt}.
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  wc -l k12.txt
+#+end_src
+#+begin_export latex
+We count 50 taxonomic K-12 genomes in our grand tree, which means that
+of the 65 listed in Table~\ref{tab:taxa}, 15 did not pass the quality
+filter.
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  pickle 1 eco2.nwk |
+      grep -f k12.txt -c
+#+end_src
+#+begin_export latex
+The program \ty{fintac} picks node 7112 as the K-12 clade. It contains
+41 targets, 9 neighbors, and 200 unknowns totaling 250 genomes,
+instead of the original 50.
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  fintac -H neidb -t 83333_ -u 562_ eco2.nwk
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+#Clade  Targets  Neighbors  Unknowns  Split (%)  Parent  Dist...
+7112    41       9          200       96.69      7109    3.37e-06
+\end{verbatim}
+#+end_export
+#+begin_export latex
+The predominant serotype in clade 7112 is O16:H48, but there are eight
+exceptions.
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  pickle 7112 eco2.nwk |
+      grep -f - sero.txt |
+      grep -v O16:H48
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+562_GCF_022439445.1	-:H48
+...
+562_GCF_025563515.1	-:H48
+562_GCF_044094645.1	O6:H1
+\end{verbatim}
+The branch to the parent of 7112 is very short, $3\times 10^{-6}$,
+which suggests that the clade picked by \ty{fintac} might not form a
+distinct taxonomic unit. To look for such units, the program
+\ty{clusters} identifies nodes where the parental branch is much
+longer than the branches of its descendants. Such nodes look a bit
+like a broom on a stick. We call them ``clusters'' and they are marked
+with suffix ``c''. If we climb from 7112, the first cluster we
+encounter is 7011, whose parental branch has length $7\times 10^{-5}$,
+roughly 20 times longer than the parental branch of 7112.
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  clusters -t eco2.nwk |
+      climt 7112
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+# Up   Node    Branch Length   Cumulative Branch Length
+...
+9      6562    1.6e-05         0.00085057
+8      6984c   0.000186        0.00066457
+7      6986c   0.000117        0.00054757
+6      6992c   0.000114        0.00043357
+5      7007c   0.000304        0.00012957
+4      7008c   5.39e-05        7.567e-05
+3      7011c   6.58e-05        9.87e-06
+2      7094    3.88e-06        5.99e-06
+1      7109    2.62e-06        3.37e-06
+0      7112    3.37e-06        0
+\end{verbatim}
+#+end_export
+#+begin_export latex
+We hypothesize that 7011 is our target clade and find only one
+additional serotype exception, another -:H48.
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  pickle 7011 eco2.nwk |
+      grep -f - sero.txt |
+      grep -v O16:H48
+#+end_src
+#+begin_export latex
+Except now we have identified 351 K-12 genomes instead of previously
+250.
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  pickle 7011 eco2.nwk |
+      grep -v '^#' -c
 #+end_src
