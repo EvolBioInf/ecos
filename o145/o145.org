@@ -1,6 +1,75 @@
 #+begin_export latex
-O145 1055538
+We count the 12 complete O145 genomes contained in Genbank, 11 for
+taxon 1055538, and one for its child taxon 1055544.
 #+end_export
 #+begin_src bash <<o145.sh>>=
-  echo "Hello O145"
+  dree -L complete -l -n -g 1055538 neidb
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+# Taxid  Parent   Rank       Genomes  Name
+1055538  562      serogroup  11       Escherichia coli O145
+1055544  1055538  strain     1        Escherichia coli O145...
+\end{verbatim}
+#+end_export
+#+begin_export latex
+All 12 of these genomes are contained in our grand tree.
+#+end_export
+#+begin_src bash <<o145.sh>>=
+  pickle 1 eco2.nwk |
+      egrep -c '(1055538_|1055544_)'
+#+end_src
+#+begin_export latex
+Clade 3600 contains 8 targets, 3 neighbors, and 3 unknowns. However,
+clade 3600 is not a cluster.
+#+end_export
+#+begin_src bash <<o145.sh>>=
+  clusters -t eco2.nwk |
+      fintac -H neidb -t 1055538_ -u 562_
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+#Clade  Targets  Neighbors  Unknowns  Split (%)  Parent  Dist...
+3600    8        3          3         98.72      3599    1.68e-05
+\end{verbatim}
+
+If we climb from 3600 to look for the nearest cluster, we find 3587.
+#+end_export
+#+begin_src bash <<o145.sh>>=
+  clusters -t eco2.nwk |
+      climt 3600
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+# Up   Node    Branch Length   Cumulative Branch Length
+25     1       0               0.0161207
+...
+5      3587c   0.000269        0.0002758
+...
+0      3600    1.68e-05        0
+\end{verbatim}
+#+end_export
+#+begin_export latex
+Clade 3587 contains all 12 starting taxa
+#+end_export
+#+begin_src bash <<o145.sh>>=
+  pickle 3587 eco2.nwk |
+      egrep -c '(1055538_|1055544_)'
+#+end_src
+#+begin_export latex
+Reassuringly, clade 3587 contains 27 O145 genomes.
+#+end_export
+#+begin_src bash <<o145.sh>>=
+  pickle 3587 eco2.nwk |
+      grep -f - sero.txt |
+      grep -c 'O145:-'
+#+end_src
+#+begin_export latex
+Moreover, clade 3587 contains no other genomes, so we accept it as the
+O145 clade.
+#+end_export
+#+begin_src bash <<o145.sh>>=
+  pickle 3587 eco2.nwk |
+      grep -f - sero.txt |
+      grep -v 'O145:-'
 #+end_src
