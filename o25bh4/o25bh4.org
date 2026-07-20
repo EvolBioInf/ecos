@@ -115,7 +115,7 @@ The most recent common ancestor of these four stray genomes is node
 #+end_src
 #+begin_export latex
 \begin{verbatim}
-> MRCA 273
+MRCA 273
 ...
 \end{verbatim}
 Clade 273 contains 29 taxa, 14\,\% of the total.

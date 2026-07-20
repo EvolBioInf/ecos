@@ -1,6 +1,79 @@
 #+begin_export latex
-O16:H48
+In Section~\ref{sec:k12} we already saw that K12 belongs to serotype
+O16:H48. So we might expect that an explicit search for O16:H48 gives
+us a subclade of the K12 clade, 7011. This turns out to be true.
+
+We begin our investigation of taxon 2705619 by counting the 16
+complete O16:H48 genomes in Genbank.
 #+end_export
 #+begin_src bash <<o16h48.sh>>=
-  echo "Hello O16:H48"
+  dree -L complete -l -n -g 2605619 neidb
 #+end_src
+#+begin_export latex
+\begin{verbatim}
+# Taxid  Parent  Rank     Genomes  Name
+2605619  562     no rank  16       Escherichia coli O16:H48
+\end{verbatim}
+#+end_export
+#+begin_export latex
+All 16 of them have ended up in our grand tree.
+#+end_export
+#+begin_src bash <<o16h48.sh>>=
+  pickle 1 eco2.nwk |
+      grep -c 2605619_
+#+end_src
+#+begin_export latex
+We use \ty{clusters} to annotate the clusters in our grand tree and
+\ty{fintac} to look up the 2705719 clade within. This is node 7025,
+which is a cluster and contains 13 of our 16 taxonomic targets plus 3
+unknowns.
+#+end_export
+#+begin_src bash <<o16h48.sh>>=
+  clusters -t eco2.nwk |
+  fintac -t 2605619_ -u 562_
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+#Clade  Targets  Neighbors  Unknowns  Split (%)  Parent  Dist...
+7025c   13       0          3         99.45      7024    1.93e-05
+\end{verbatim}
+Clade 7025 is contained in clade 7011, the O16:H48 clade from
+Section~\ref{sec:k12}. Clade 7011 is the next cluster up from 7025.
+#+end_export
+#+begin_src bash <<o16h48.sh>>=
+  clusters -t eco2.nwk |
+      climt 7025c eco2.nwk
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+> # Up   Node    Branch Length   Cumulative Branch Length
+42     1       0               0.0144785
+...
+8      7011c   6.58e-05        4.78e-05
+...
+0      7025c   1.93e-05        0
+\end{verbatim}
+#+end_export
+#+begin_export latex
+Clade 7011 contains all 16 taxa with ID 2605619.
+#+end_export
+#+begin_src bash <<o16h48.sh>>=
+  pickle 7011 eco2.nwk |
+      grep -c 2605619_
+#+end_src
+#+begin_export latex
+Clade 7011 is also the lowest and hence smallest clade containing all
+16 taxa with ID 2605619.
+#+end_export
+#+begin_src bash <<o16h48.sh>>=
+  mrca 2605619_ eco2.nwk
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+MRCA 7011
+...
+\end{verbatim}
+So we can either treat taxon 2605619 as a subgroup of serotype
+O16:H48, or expand it to encompass all of O16:H48. We opt for the
+subgroup view.
+#+end_export
