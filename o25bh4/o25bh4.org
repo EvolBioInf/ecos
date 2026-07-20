@@ -1,6 +1,201 @@
 #+begin_export latex
-O25b:H4-ST131
+There are 19 \ob genomes in Genbank
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  echo "Hello O25b:H4-ST131"
+  dree -L complete -l -n -g 941322 neidb
 #+end_src
+#+begin_export latex
+\begin{verbatim}
+# Taxid  Parent  Rank     Genomes  Name
+941322   562     no rank  19       Escherichia coli O25b:H4-ST131
+\end{verbatim}
+#+end_export
+#+begin_export latex
+All 19 of them have ended up in our grand tree.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  pickle 1 eco2.nwk |
+      grep -c 941322_
+#+end_src
+#+begin_export latex
+Similarly, all 19 of the taxonomic \ob genomes are found in clade 245
+picked by \ty{fintac}, together with 6 neighbors and an astonishing
+789 unknonwns.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  fintac -t 941322_ -u 562_ eco2.nwk
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+#Clade  Targets  Neighbors  Unknowns  Split (%)  Parent  Dist...
+245     19       6          789       98.88      244     0.00141
+\end{verbatim}
+#+end_export
+#+begin_export latex
+The serotypes of clade 245 are mixed, with two serotypes dominating,
+O25:H4 and O16:H5.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  pickle 245 eco2.nwk |
+      grep -f - sero.txt |
+      awk '{print $2}' |
+      sort |
+      uniq -c |
+      sort -n -r
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+    605 O25:H4
+    190 O16:H5
+      6 O107/O117:H4
+    ...
+\end{verbatim}
+#+end_export
+#+begin_export latex
+It seems the clade picked by \ty{fintac} consists at least of the two
+clades \ob and O16:H5. To further investigate, we look up the children
+of 245, 246 and 451.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  climt -d 1 245 eco2.nwk
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+245
+     246
+     451
+\end{verbatim}
+#+end_export
+#+begin_export latex
+Clade 246 contains 206 genomes.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  pickle 246 eco2.nwk |
+      grep -v '^#' -c
+#+end_src
+#+begin_export latex
+Of these 206 genomes 190, or 92\,\%, are serotype O16:H5.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  pickle 246 eco2.nwk |
+      grep -f - sero.txt |
+      awk '{print $2}' |
+      sort |
+      uniq -c |
+      sort -n -r
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+    190 O16:H5
+      6 O107/O117:H4
+      3 O25:H4
+    ...
+\end{verbatim}
+In particular, the four strains classified as \ob in that clade are in
+fact O16:H5.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  pickle 246 eco2.nwk |
+      grep 941322_ |
+      grep -f - sero.txt
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+941322_GCF_024918115.1	O16:H5
+941322_GCF_024918395.1	O16:H5
+941322_GCF_951802855.1	O16:H5
+941322_GCF_951802865.1	O16:H5
+\end{verbatim}
+The most recent common ancestor of these four stray genomes is node
+273.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  pickle -t 246 eco2.nwk |
+      mrca 941322_
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+> MRCA 273
+...
+\end{verbatim}
+Clade 273 contains 29 taxa, 14\,\% of the total.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  pickle 273 eco2.nwk |
+      grep -v '^#' -c
+#+end_src
+#+begin_export latex
+We now remove clade 273, and hence the four mislabeled genomes, and
+annotate the clusters on the resulting tree. From that tree
+\ty{fintac} picks node 532 for \ob. Since node 532 doesn't have suffix
+c, it isn't a cluster
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  pickle -t -c 273 eco2.nwk |
+      clusters -t |
+      fintac -t 941322_ -u 562_
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+#Clade  Targets  Neighbors  Unknowns  Split (%)  Parent  Dist...
+532     15       4          508       99.25      522     2.28e-05
+\end{verbatim}
+#+end_export
+#+begin_export latex
+To find the cluster of \ob, we climb from node 532 in a tree with
+annotated clusters. In the resulting list of nodes we already know
+that 245, albeit a cluster, is not correct as it contains the O16:H5
+clade.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  clusters -t eco2.nwk |
+      climt 532
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+# Up   Node   Branch Length   Cumulative Branch Length
+16     1      0               0.0158689
+...
+7      245c   0.00141         0.0013849
+6      451c   0.000844        0.0005409
+5      516c   0.000182        0.0003589
+4      518    8.54e-05        0.0002735
+3      519c   0.00017         0.0001035
+2      520    2.3e-05         8.05e-05
+1      522    5.77e-05        2.28e-05
+0      532    2.28e-05        0
+\end{verbatim}
+So we look for a clade below 245 and above 532 and try the first node
+above node 532, node 519. Out of its 540 genomes, 536, or 99\,\%, are
+O25:H4.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  pickle 519 eco2.nwk |
+      grep -f - sero.txt |
+      awk '{print $2}' |
+      sort |
+      uniq -c |
+      sort -n -r
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+    536 O25:H4
+    ...
+\end{verbatim}
+Similarly, 523, or 97\,\%, of the genomes in clade 519 belong to
+ST131, which together with serotype O25:H4 defines \ob.
+#+end_export
+#+begin_src bash <<o25bh4.sh>>=
+  pickle 519 eco2.nwk |
+      grep -f - mlst.txt |
+      awk '{print $2}' |
+      sort |
+      uniq -c |
+      sort -n -r
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+    523 131
+    ...
+\end{verbatim}
+#+end_export
