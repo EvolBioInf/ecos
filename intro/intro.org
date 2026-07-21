@@ -65,14 +65,18 @@ the distribution of genomes among specific strains. For this we use
 with at least 10 genomes to get a table similar to
 Table~\ref{tab:taxa}.
 \begin{table}
-  \caption{The eight \emph{E. coli} taxa with at least 10 complete genomes
-    in their subtree ordered by initial genome count.}\label{tab:taxa}
+  \caption{The eight \emph{E. coli} taxa with \emph{initially} at
+    least 10 complete genomes in Genbank; the \emph{final} genome
+    count refers to the number of genomes in the clade rooted on
+    \emph{node} in the phylogeny of all complete \emph{E. coli}
+    genomes analyzed (\ty{eco2.nwk}); table ordered by initial genome
+    count.}\label{tab:taxa}
   \begin{center}
     \resizebox{\textwidth}{!}{
-      \begin{tabular}{crllrrl}
+      \begin{tabular}{crllrrlr}
         \hline
         &&&&\multicolumn{2}{c}{Genomes}\\\cline{5-6}
-        \# & Taxon-ID & Parent & Rank & Initial & Final & Name\\\hline
+        \# & Taxon-ID & Parent & Rank & Initial & Final & Name & Node\\\hline
         \input{../intro/taxa}\\\hline
       \end{tabular}
     }
@@ -114,7 +118,7 @@ yielding a total of 47 O111:H8 genomes (Table~\ref{tab:taxa}).
 In addition to O111:H8, we also query the complete tree for the other
 five distinct taxa below species rank listed in Table~\ref{tab:taxa},
 O157:H7, K-12, O25b:H4-ST131, O16:H48, and O145. Like for O111:H8, we
-find additional genomes for each of these taxa.
+find additional genomes for four of these five taxa.
 
 In Chapter~\ref{ch:m}, finally, the 47 genomes of \emph{E. coli}
 O111:H8 identified in Chapter~\ref{ch:q} are used to construct
