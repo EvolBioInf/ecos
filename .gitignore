@@ -38,6 +38,5 @@ markers/*
 mlst.txt
 neidb
 o157h7/o157h7*.txt
-query/*.sh
 sero.txt
 tutorial
