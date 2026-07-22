@@ -4,13 +4,14 @@ data:
 	tar -xvjf data_ecos.tbz
 	make -C data
 	rm data_ecos.tbz
-tutorial: data data/eco.json data/eco.nwk data/neidb data/sero.txt intro/intro.sh markers/markers.sh pilot/pilot.sh query/query.sh scripts/rename.sh scripts/testTut.sh o157h7/o157h7.sh k12/k12.sh o111h8/o111h8.sh o25bh4/o25bh4.sh o16h48/o16h48.sh o145/o145.sh
+tutorial: data data/eco.json data/eco.nwk data/mlst.txt data/neidb data/sero.txt intro/intro.sh markers/markers.sh pilot/pilot.sh query/query.sh scripts/rename.sh scripts/testTut.sh o157h7/o157h7.sh k12/k12.sh o111h8/o111h8.sh o25bh4/o25bh4.sh o16h48/o16h48.sh o145/o145.sh
 	test -d tutorial || mkdir tutorial
 	cp intro/intro.sh pilot/pilot.sh query/query.sh markers/markers.sh tutorial/
 	cp o157h7/o157h7.sh k12/k12.sh o111h8/o111h8.sh o25bh4/o25bh4.sh o16h48/o16h48.sh o145/o145.sh tutorial/
 	cp scripts/rename.sh scripts/testTut.sh tutorial/
 	ln -s $$(pwd)/data/neidb tutorial/
 	ln -s $$(pwd)/data/eco.* tutorial/
+	ln -s $$(pw)/data/mlst.txt tutorial/
 	ln -s $$(pwd)/data/sero.txt tutorial/
 pilot/pilot.sh:
 	make -C pilot

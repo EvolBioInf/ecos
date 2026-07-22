@@ -60,7 +60,7 @@ to get Figure~\ref{fig:ranks}. It shows that 92.9\,\% of complete
 The ranks in the tree in Figure~\ref{fig:ranks} tell us little about
 the distribution of genomes among specific strains. For this we use
 \ty{dree} to list (\ty{-l}) the names (\ty{-n}) and the recursive
-(\ty{-r}) counts of complete (\ty{-L}) genomes among the
+(\ty{-R}) counts of complete (\ty{-L}) genomes among the
 \emph{E. coli} taxa listed with names (\ty{-n}). We extract the taxa
 with at least 10 genomes to get a table similar to
 Table~\ref{tab:taxa}.
@@ -84,7 +84,7 @@ Table~\ref{tab:taxa}.
 \end{table}
 #+end_export
 #+begin_src bash <<intro.sh>>=
-  dree -n -r -L complete -l 562 neidb |
+  dree -n -R -L complete -l 562 neidb |
       tail -n +2 |
       sed 's/o /o_/' |
       sort -k 4 -n -r |
