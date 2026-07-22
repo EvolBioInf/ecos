@@ -1,8 +1,7 @@
 !markers/Makefile
 !markers/markers.org
-!pilot/Makefile
-!pilot/all.ps
-!pilot/pilot.org
+pilot/pilot.fasta
+pilot/rename.sh
 !tutorial/intro.sh
 !tutorial/markers.sh
 !tutorial/pilot.sh
@@ -39,7 +38,6 @@ markers/*
 mlst.txt
 neidb
 o157h7/o157h7*.txt
-pilot/*
 query/*.sh
 sero.txt
 tutorial
