@@ -11,7 +11,7 @@ tutorial: data data/eco.json data/eco.nwk data/mlst.txt data/neidb data/sero.txt
 	cp scripts/rename.sh scripts/testTut.sh tutorial/
 	ln -s $$(pwd)/data/neidb tutorial/
 	ln -s $$(pwd)/data/eco.* tutorial/
-	ln -s $$(pw)/data/mlst.txt tutorial/
+	ln -s $$(pwd)/data/mlst.txt tutorial/
 	ln -s $$(pwd)/data/sero.txt tutorial/
 pilot/pilot.sh:
 	make -C pilot
