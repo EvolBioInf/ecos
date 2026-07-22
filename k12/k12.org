@@ -112,10 +112,83 @@ additional serotype exception, another -:H48.
       grep -v O16:H48
 #+end_src
 #+begin_export latex
-Except now we have identified 351 K-12 genomes instead of previously
+However, now we have identified 351 K-12 genomes instead of previously
 250.
 #+end_export
 #+begin_src bash <<k12.sh>>=
   pickle 7011 eco2.nwk |
       grep -v '^#' -c
 #+end_src
+#+begin_export latex
+When we plot the subtree rooted on 7011, we get Figure~\ref{fig:k12},
+which contains a clade with two very long branches.
+\begin{figure}
+  \begin{center}
+    \includegraphics{../k12/k12}
+  \end{center}
+  \caption{The phylogeny of the K12/O16:H48 strains without node
+    labels contains a clade with two very long branches.}\label{fig:k12}
+\end{figure}
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  pickle -t 7011 eco2.nwk |
+      land -r -l |
+      plotTree
+#+end_src
+#+begin_export latex
+To identify the clade with the strange topology, we get the nodes in
+clade 7011 and the lengths of their incoming branches. When we sort
+the nodes by branch length, we find that node 7278 has the longest
+incoming branch, followed by *044094645.1.
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  pickle -t 7011 eco2.nwk |
+      clusters -b 7011 |
+      grep -v '^#' |
+      sort -k 3 -g -r |
+      head
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+7278                     7277    0.0049    des
+562_GCF_044094645.1      7276    0.00226   des
+562_GCF_003052665.1      7142    0.000181  des
+7277                     7276    0.000146  des
+...
+\end{verbatim}
+The parent of *044094645.1, 7276, happens to also be the parent of
+7277. So if we plot the subtree rooted on 7276, we get
+Figure~\ref{fig:out}, where we have isolated the exceptional clade in
+Figure~\ref{fig:k12}. For better legibility we remove the labels of
+the internal nodes with \ty{land}.
+\begin{figure}
+  \begin{center}
+    \includegraphics{../k12/out.ps}
+  \end{center}
+  \caption{Zooming in on the clade with the two very long branches in
+    Figure~\ref{fig:k12}.}\label{fig:out}
+\end{figure}
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  pickle -t 7276 eco2.nwk |
+      land -r |
+      plotTree
+#+end_src
+#+begin_export latex
+We can list the seven genomes in clade 7276.
+#+end_export
+#+begin_src bash <<k12.sh>>=
+  pickle 7276 eco2.nwk
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+# Selected clade
+## 7276
+562_GCF_044094645.1
+...
+\end{verbatim}
+#+end_export
+#+begin_export latex
+The next step would be to investigate these genomes to discover the
+genomic regions underlying the strange topology of their subtree.
+#+end_export
