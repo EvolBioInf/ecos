@@ -9,14 +9,14 @@ Haubold
 ** Dependencies
 This tutorial has six main dependencies:
 - [[https://github.com/evolbioinf/neighbors][Neighbors]] for finding target and neighbor genomes
-- [[https://www.ncbi.nlm.nih.gov/datasets/][datasets]] for downloading genomes
+- [[https://www.ncbi.nlm.nih.gov/datasets/][datasets]] and [[https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/dataformat][dataformat]] for downloading and analyzing genomes
 - [[https://github.com/evolbioinf/fur][Fur]] for finding unique genome regions
 - [[https://github.com/evolbioinf/prim/][Prim]] for designing PCR primers
 - [[https://github.com/evolbioinf/biobox][Biobox]] for general sequence manipulation
-- the Unix tools `curl`, `bzip2`, and `zip` for downloading and
+- the Unix tools =curl=, =bzip2=, and =zip= for downloading and
   decompressing files
 If you are on a Debian system like WSL/Ubuntu, you can install these
-dependencies into =~/bin/= by executing from inside the `o111h8` repo
+dependencies into =~/bin/= by executing from inside the =o111h8= repo
 #+begin_src sh
   bash scripts/setup.sh
 #+end_src
@@ -31,10 +31,10 @@ Execute
 #+begin_src sh
   make data
 #+end_src
-to generate the directory `data` and calculate the Neighbors database
+to generate the directory =data= and calculate the Neighbors database
 inside it. This takes approximately 2.5 minutes, produces 166 warnings
 you can safely ignore, and results in four relevant files inside
-`data`,
+=data=,
 - =neidb=, the Neighbors database calculated from the [[https://ftp.ncbi.nlm.nih.gov/genomes/ASSEMBLY_REPORTS/assembly_summary_genbank.txt][Genbank assemblies]],
   [[https://ftp.ncbi.nlm.nih.gov/genomes/ASSEMBLY_REPORTS/assembly_summary_refseq.txt][Refseq assemblies]], and the [[https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz][taxonomy database]] downloaded from the NCBI
   on 17th June 2026
@@ -43,7 +43,7 @@ you can safely ignore, and results in four relevant files inside
 - =eco.nwk=, the tree of the 7362 complete /E. coli/ genomes that
   passed the quality filter
 - =sero.txt=, the serotypes of the 7362 complete /E. coli/ genomes
-  calculated with [[https://github.com/phac-nml/ecoli_serotyping][`ectyper`]]
+  calculated with [[https://github.com/phac-nml/ecoli_serotyping][ectyper]]
 - =mlst.txt=, the sequence types of the 7362 complete /E. coli/
   genomes retrieved using the program [[https://github.com/tseemann/mlst][mlst]]
 

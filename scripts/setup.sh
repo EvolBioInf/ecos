@@ -2,7 +2,7 @@
 test -d ~/bin || mkdir ~/bin
 # Install curl, bzip2, and zip
 sudo apt update
-sudo apt install -y curl bzip2 zip imv column
+sudo apt install -y curl bzip2 zip imv
 # Install Neighbors
 git clone https://github.com/evolbioinf/neighbors
 cd neighbors
@@ -13,6 +13,9 @@ cd ..
 # Install datasets
 curl https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/datasets -o ~/bin/datasets
 chmod +x ~/bin/datasets
+# Install dataformat
+curl https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/dataformat -o ~/bin/dataformat
+chmod +x ~/bin/dataformat
 # Install Fur
 git clone https://github.com/evolbioinf/fur
 cd fur
