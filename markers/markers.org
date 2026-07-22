@@ -70,7 +70,7 @@ Similarly, we link the neighbors genomes into the directory
 #+end_src
 #+begin_export latex
 We construct the Fur database, \ty{markers.db}. This takes roughly
-14\,s on our generic laptop.
+4\,s on our generic laptop.
 #+end_export
 #+begin_src sh <<markers.sh>>=
   makeFurDb -t targets -n neighbors -d markers.db
