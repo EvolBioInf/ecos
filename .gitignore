@@ -40,3 +40,6 @@ neidb
 o157h7/o157h7*.txt
 sero.txt
 tutorial
+
+survey/*.txt
+survey/*.dat
