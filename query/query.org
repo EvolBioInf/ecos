@@ -29,22 +29,23 @@ JSON format in a temporary file, \ty{tmp.json}.
 To keep this tutorial stable, we switch to the summary file of 17th
 Juni 2026, \ty{eco.json}. From this we pick the accessions where the
 annotation notes do not contain the word ``fail'', the attribute
-``atypical'' is not true, no rRNA or tRNA genes are missing, and no
-proteins have been frameshifted.
+``atypical'' is not true, no rRNA or tRNA genes are missing, and
+proteins have been frameshifted, and the ANI check has not failed.
 #+end_export
 #+begin_src sh <<query.sh>>=
   dataformat tsv genome \
-	     --inputfile eco.json \
-	     --fields 'acc*','*notes','*atypical*' |
+  	     --inputfile eco.json \
+  	     --fields 'acc*','*notes','*atypical*','ani-check*' |
       tail -n +2 |
       grep -v fail |
       grep -v true |
       grep -v missing |
       grep -v frameshifted |
+      grep -v Failed |
       cut -f 1 > eco.txt
 #+end_src
 #+begin_export latex
-The file \ty{eco.txt} now contains 7362 accessions, down by over 522
+The file \ty{eco.txt} now contains 7361 accessions, down by over 521
 from the original 7884.
 #+end_export
 #+begin_src sh <<query.sh>>=
@@ -55,7 +56,7 @@ The next few commands form a ``bridge'' between the accessions and the
 phylogeny. If you don't have the resources or the patience to download
 the genomes and compute the phylogeny, you can directly skip ahead to
 the phylogeny in the next \ty{query.sh} chunk. As a first step on the
-bridge, we download the 7362 genomes in \ty{eco.txt}, first in
+bridge, we download the 7361 genomes in \ty{eco.txt}, first in
 dehydrated form.
 #+end_export
 #+begin_src sh <<bridge>>=
@@ -96,7 +97,7 @@ internal nodes, and store it in \ty{eco.nwk}.
       land > eco.nwk
 #+end_src
 #+begin_export latex
-We count the 7,362 complete genomes in \ty{eco.nwk} by picking its
+We count the 7,361 complete genomes in \ty{eco.nwk} by picking its
 root, node 1, and counting the listed leaves.
 #+end_export
 #+begin_src sh <<query.sh>>=
@@ -106,58 +107,8 @@ root, node 1, and counting the listed leaves.
 #+begin_export latex
 Bacterial species are defined as having an ANI distance of at least
 95. To check we are dealing only with \emph{E.~coli}, we measure the
-largest distance between two taxa in our phylogeny, 0.0672.
-#+end_export
-#+begin_src sh <<query.sh>>=
-  midRoot -p eco.nwk |
-      head -n 1
-#+end_src
-#+begin_export latex
-\begin{verbatim}
-# d(562_GCF_022654545.1, 562_GCF_021307345.1): 0.067
-\end{verbatim}
-A distance of 0.067 implies an ANI of 93.3, which is below the 95 ANI
-threshold for bacterial species. This suggests our current sample
-contains at least one genome that does not belong to
-\emph{E. coli}. To investigate further, we climb from the two most
-distant taxa towards the root of the phylogeny. The climb from
-$\ast\mbox{022654545.1}$ consists of 57 steps, indicating many short
-branches on the way.
-#+end_export
-#+begin_src sh <<query.sh>>=
-  climt 562_GCF_022654545.1 eco.nwk |
-      head -n 2
-#+end_src
-#+begin_export latex
-\begin{verbatim}
-#Up  Node  BranchLength  CumulativeBranchLength
-57   1     0             0.0334557366
-\end{verbatim}
-#+end_export
-#+begin_export latex
-In contrast, the climb from $\ast\mbox{021307345.1}$ consists of a
-single step along a branch that is as long as the 47 branches on the
-other path combined, 0.0335.
-#+end_export
-#+begin_src sh <<query.sh>>=
-  climt 562_GCF_021307345.1 eco.nwk |
-      head -n 2
-#+end_src
-#+begin_export latex
-\begin{verbatim}
-#Up  Node  BranchLength  CumulativeBranchLength
-1    1     0             0.0335
-\end{verbatim}
-We remove that taxon by picking the tree of its complement, and
-relabel the internal nodes of the resulting tree.
-#+end_export
-#+begin_src sh <<query.sh>>=
-  pickle -t -c 562_GCF_021307345.1 eco.nwk |
-      land > eco2.nwk
-#+end_src
-#+begin_export latex
-The most distant genomes in our \emph{E.~coli} sample now have ANI 96.1,
-which fits the species criterion.
+largest distance between two taxa in our phylogeny, 0.0391.  This
+corresponds to an ANI of 96.1, which fits the species criterion.
 #+end_export
 #+begin_src sh <<query.sh>>=
   midRoot -p eco2.nwk |
