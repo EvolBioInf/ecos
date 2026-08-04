@@ -33,9 +33,10 @@ annotation notes do not contain the word ``fail'', the attribute
 proteins have been frameshifted, and the ANI check has not failed.
 #+end_export
 #+begin_src sh <<query.sh>>=
+  fields="'acc*','*notes','*atypical*','ani-check*'"
   dataformat tsv genome \
   	     --inputfile eco.json \
-  	     --fields 'acc*','*notes','*atypical*','ani-check*' |
+  	     --fields $fields |
       tail -n +2 |
       grep -v fail |
       grep -v true |
@@ -45,8 +46,8 @@ proteins have been frameshifted, and the ANI check has not failed.
       cut -f 1 > eco.txt
 #+end_src
 #+begin_export latex
-The file \ty{eco.txt} now contains 7361 accessions, down by over 521
-from the original 7884.
+The file \ty{eco.txt} now contains 7361 accessions, down by 523 from
+the original 7884.
 #+end_export
 #+begin_src sh <<query.sh>>=
   wc -l eco.txt
