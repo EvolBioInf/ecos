@@ -123,4 +123,8 @@ find additional genomes for four of these five taxa.
 In Chapter~\ref{ch:m}, finally, the 47 genomes of \emph{E. coli}
 O111:H8 identified in Chapter~\ref{ch:q} are used to construct
 diagnostic PCR primers for that serotype.
+
+To put the \emph{E.~coli} analysis in context, the Appendix contains a
+brief survey of \ty{neidb} and shows how to identify bacterial species
+with taxonomic structure below the species rank.
 #+end_export

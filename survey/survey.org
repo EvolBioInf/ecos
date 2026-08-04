@@ -1,26 +1,47 @@
 #+begin_export latex
 In this section we survey the distribution of the genomes among
 species, especially bacterial species. We begin by counting the
-2,844,193 taxa.
+2,844,193 taxa in \ty{neidb}.
 #+end_export
-#+begin_src bash <<res.sh>>=
+#+begin_src bash <<survey.sh>>=
   q="select count(*)"
   q="$q from taxon"
   sqlite3 neidb "$q"
 #+end_src
 #+begin_export latex
-We count the 2,319,400 species in \ty{neidb}.
+Of the 2.8 million taxa in \ty{neidb}, 2,319,400 are species.
 #+end_export
-#+begin_src bash <<res.sh>>=
+#+begin_src bash <<survey.sh>>=
   q="select count(*)"
   q="$q from taxon"
   q="$q where rank like 'species'"
   sqlite3 neidb "$q"
 #+end_src
 #+begin_export latex
-We find the taxon-ID of bacteria, 2.
+To look up the number of genomes in \ty{neidb}, we first look up the
+taxon-ID of the root of the taxonomy, 1.
 #+end_export
-#+begin_src bash <<res.sh>>=
+#+begin_src bash <<survey.sh>>=
+  taxi -e root neidb
+#+end_src
+#+begin_export latex
+We use \ty{dree} to look up the recursive number of genomes assocaited
+with the root, 3,559,920.
+#+end_export
+#+begin_src bash <<survey.sh>>=
+  dree -R -m 0 -l 1 neidb
+#+end_src
+#+begin_export latex
+Of these 3.6 million genomes, 316,371 are assembled to level
+``complete''.'
+#+end_export
+#+begin_src bash <<survey.sh>>=
+  dree -L complete -R -m 0 -l 1 neidb
+#+end_src
+#+begin_export latex
+The taxon-ID of bacteria is 2.
+#+end_export
+#+begin_src bash <<survey.sh>>=
   taxi -e "bacteria" neidb
 #+end_src
 #+begin_export latex
@@ -30,156 +51,244 @@ We find the taxon-ID of bacteria, 2.
 \end{verbatim}
 #+end_export
 #+begin_export latex
-We store all bacterial taxa with their recursive counts of genomes
-assembled to any level in file \ty{any.txt}. To facilitate further
-processing, we convert the column delimiters, two blanks, to tabs, and
-replace any remaining blanks by underscores. This takes 116\,s.
+There are 3,154,814 bacterial genomes.
 #+end_export
-#+begin_src bash <<res.sh>>=
+#+begin_src bash <<survey.sh>>=
+  dree -R -m 0 -l 2 neidb
+#+end_src
+#+begin_export latex
+Out of these, 83,034 are assembled to level complete.
+#+end_export
+#+begin_src bash <<survey.sh>>=
+  dree -L complete -R -m 0 -l 2 neidb
+#+end_src
+#+begin_export latex
+We now concentrate on the distribution of genomes among bacterial
+species. For this we construct a table consisting of five columns
+\begin{enumerate}
+\item taxon-ID
+\item recursive genome count, any
+\item recursive genome count, complete
+\item raw genome count, any
+\item raw genome count, complete
+\end{enumerate}
+Table~\ref{tab:gc} shows ten entries in a version of the table sorted
+numerically by taxon-ID. The first entry is \emph{E.~coli}, 562.
+\begin{table}
+  \caption{Example entries in the table of genomes in bacterial
+    species; recursive (\emph{rec}.) counts contrast with \emph{raw},
+    and \emph{any} assembly level with complete (\emph{comp}.).}\label{tab:gc}
+  \begin{center}
+    \begin{tabular}{crrcrr}
+      \hline
+      &\multicolumn{5}{c}{genomes}\\\cline{2-6}
+      &\multicolumn{2}{c}{rec.} &&
+      \multicolumn{2}{c}{raw}\\\cline{2-3}\cline{5-6}
+      taxon-ID & any & comp. && any & comp.\\\hline
+      \input{../survey/gc}\\\hline
+    \end{tabular}
+  \end{center}
+\end{table}
+#+end_export
+#+begin_export latex
+To construct Table~\ref{tab:gc}, we run \ty{dree} four times to
+generate four tables, which we later join. Since each of these runs
+takes more than 2 minutes, we execute them as child processes in
+parallel in the script \ty{driveDree.sh} that waits for the child
+processes to finish before it finishes
+itself.\bpr{driveDree.sh}{pr:dd}
+#+end_export
+#+begin_src bash <<driveDree.sh>>=
+  ##<<Get recursive genomes of any level, Pr. \ref{pr:dd}>>
+  ##<<Get recursive genomes of level complete, Pr. \ref{pr:dd}>>
+  ##<<Get raw genomes of any level, Pr. \ref{pr:dd}>>
+  ##<<Get raw genomes of level complete, Pr. \ref{pr:dd}>>
+  wait
+#+end_src
+#+begin_export latex
+\epr We get the recursive counts of genomes assembled to any level per
+bacterial taxon, filter the output, and store it in
+\ty{recAny.txt}. We send the job to the background so the next job can
+be started immediately
+#+end_export
+#+begin_src bash <<Get recursive genomes of any level, Pr. \ref{pr:dd}>>=
   dree -R -l 2 neidb |
-      sed -E 's/  +/\t/g' |
-      sed 's/ /_/g' > any.txt
+      bash filter.sh > recAny.txt &
 #+end_src
 #+begin_export latex
-Similarly, we store all bacterial taxa with their recursive counts of
-genomes assembled to level complete in file \ty{comp.txt}. This time
-we also include the taxon names. This takes 69\,s.
+Inside \ty{filter.sh} we convert the column delimiters, to blanks, two
+tabs. Then we replace the remaining blanks by underscores, extract the
+species, and print their taxon-IDs and genome counts. The result is
+sorted in preparation for \ty{join}, using \ty{1b,1} as argument for
+the key option, \ty{-k}, as described in the \ty{info} page of
+\ty{join}.  \bpr{filter.sh}{pr:fil}
 #+end_export
-#+begin_src bash <<res.sh>>=
-  dree -R -l -L complete -n 2 neidb |
-      sed -E 's/  +/\t/g' |
-      sed 's/ /_/g' > comp.txt
+#+begin_src bash <<filter.sh>>=
+  sed -E 's/  +/\t/g' |
+      sed 's/ /_/g' |
+      awk '$3=="species"{print $1, $4}' |
+      sort -k 1b,1
 #+end_src
 #+begin_export latex
-We would like to join our two tables of genome counts. For this we
-remove the table headers and sort the tables.
+\epr We get the recursive counts of genomes assembled to level
+complete, and save them in the file \ty{recComp.txt}.
 #+end_export
-#+begin_src bash <<res.sh>>=
-  for a in any comp; do
-      tail -n +2 $a.txt |
-          sort > t
-      mv t $a.txt
-  done
+#+begin_src bash <<Get recursive genomes of level complete, Pr. \ref{pr:dd}>>=
+  dree -R -L complete -l 2 neidb |
+      bash filter.sh > recComp.txt &
 #+end_src
 #+begin_export latex
-From the join we extract the taxon-ID, its rank, the genome count for
-assembly levels any and complete, and the taxon name.
+We get the raw counts of genome assembled to any level, and save them
+in file \ty{rawAny.txt}.
 #+end_export
-#+begin_src bash <<res.sh>>=
-  join any.txt comp.txt |
-      cut -d ' ' -f 1,3,4,7,8 > anyComp.txt
+#+begin_src bash <<Get raw genomes of any level, Pr. \ref{pr:dd}>>=
+  dree -l 2 neidb |
+      bash filter.sh > rawAny.txt &
+#+end_src
+#+begin_export latex
+Finally, we get the raw counts of genomes assembled to level complete
+and save them in file \ty{rawComp.txt}.
+#+end_export
+#+begin_src bash <<Get raw genomes of level complete, Pr. \ref{pr:dd}>>=
+  dree -L complete -l 2 neidb |
+      bash filter.sh > rawComp.txt &
+#+end_src
+#+begin_export latex
+We run \ty{driveDree.sh}.
+#+end_export
+#+begin_src bash <<survey.sh>>=
+  bash driveDree.sh
+#+end_src
+#+begin_export latex
+We join the four files we just constructed with \ty{driveDree.sh} and
+save the result in \ty{recRaw.txt} to remind us of the order of the
+columns, recursive counts followed by raw counts.
+#+end_export
+#+begin_src bash <<survey.sh>>=
+  join recAny.txt recComp.txt |
+      join - rawAny.txt |
+      join - rawComp.txt > recRaw.txt
 #+end_src
 #+begin_export latex
 We count the 549,008 bacterial species.
 #+end_export
-#+begin_src bash <<res.sh>>=
-  awk '$2=="species"' anyComp.txt |
-      wc -l
+#+begin_src bash <<survey.sh>>=
+  wc -l recRaw.txt
 #+end_src
 #+begin_export latex
-There are 3,154,814 bacterial genomes assembled to any level, compared
-to only 83,034 assembled to level complete.
+There are 104,642 bacterial species with at least one genome sequence
+regardless of assembly level.
 #+end_export
-#+begin_src bash <<res.sh>>=
-  awk '$1==2' anyComp.txt
-#+end_src
-#+begin_export latex
-The bacterial genomes make up 88.6\,\% of the total genome
-count, 3,559,920.
-#+end_export
-#+begin_src bash <<res.sh>>=
-  dree -m 0 -l -R 1 neidb 
-#+end_src
-#+begin_export latex
-\begin{verbatim}
-# Taxid  Parent  Rank     Genomes
-1        1       no rank  3559920
-\end{verbatim}
-#+end_export
-#+begin_export latex
-There are 104,642 bacterial species with at least one genome sequence.
-#+end_export
-#+begin_src bash <<res.sh>>=
-  awk '$2=="species" && $3 >= 1' anyComp.txt |
+#+begin_src bash <<survey.sh>>=
+  awk '$2>0' recRaw.txt |
       wc -l
 #+end_src
 #+begin_export latex
 There are just 17,012 bacterial species with at least one
 \emph{complete} genome.
 #+end_export
-#+begin_src bash <<res.sh>>=
-  awk '$2=="species" && $4 >= 1' anyComp.txt |
+#+begin_src bash <<survey.sh>>=
+  awk '$3>0' recRaw.txt |
       wc -l
 #+end_src
 #+begin_export latex
 We store the number of genomes per bacterial species with at least one
 genome in \ty{gcAny.dat}.
 #+end_export
-#+begin_src bash <<res.sh>>=
-  awk '$2=="species" && $3>0' anyComp.txt |
-      awk '{c[$3]++}END{for(a in c)print a, c[a]}' |
+#+begin_src bash <<survey.sh>>=
+  awk '$2>0' recRaw.txt |
+      awk '{c[$2]++}END{for(a in c)print a, c[a]}' |
       sort -n > gcAny.dat
 #+end_src
 #+begin_export latex
 The most frequent genome count per species is 1, which occurs 84,977
 times.
 #+end_export
-#+begin_src bash <<res.sh>>=
+#+begin_src bash <<survey.sh>>=
   head -n 1 gcAny.dat
 #+end_src
 #+begin_export latex
-This means to 81.2\,\% of sequenced bacterial species have a single
-genome.
+We store the number of bacterial species with at least one complete
+genome in \ty{gcComp.dat}.
 #+end_export
-#+begin_src bash <<res.sh>>=
-  echo "84977 / 104642" | bc -l
-#+end_src
-#+begin_export latex
-We store the number of complete genomes per bacterial species with at
-least one genome in \ty{gcComp.dat}. This takes approximately 51\,s.
-#+end_export
-#+begin_src bash <<res.sh>>=
-  awk '$2=="species" && $4>0' anyComp.txt |
-      awk '{c[$4]++}END{for(a in c)print a, c[a]}' |
+#+begin_src bash <<survey.sh>>=
+  awk '$3>0' recRaw.txt |
+      awk '{c[$3]++}END{for(a in c)print a, c[a]}' |
       sort -n > gcComp.dat
 #+end_src
 #+begin_export latex
 The most frequent count of complete genomes per bacterial species is
 also 1, which occurs 13,778.
 #+end_export
-#+begin_src bash <<res.sh>>=
+#+begin_src bash <<survey.sh>>=
   head -n 1 gcComp.dat
-#+end_src
-#+begin_export latex
-This means 79.3\,\% of all bacterial species with one or more complete
-sequenced genomes have just a single genome.
-#+end_export
-#+begin_src bash <<res.sh>>=
-  echo "13778 / 17384 * 100" | bc -l
 #+end_src
 #+begin_export latex
 The largest number of sequenced genomes of any assembly level is
 618,721.
 #+end_export
-#+begin_src bash <<res.sh>>=
+#+begin_src bash <<survey.sh>>=
   tail -n 1 gcAny.dat
 #+end_src
 #+begin_export latex
-This is the genome count for \emph{Salmonella enterica}.
+This is the genome count for taxon 28901.
 #+end_export
-#+begin_src bash <<res.sh>>=
-  awk '$3==618721' anyComp.txt
+#+begin_src bash <<survey.sh>>=
+  awk '$2==618721' recRaw.txt
+#+end_src
+#+begin_export latex
+Taxon 28901 is \emph{Salmonella enterica}.
+#+end_export
+#+begin_src bash <<survey.sh>>=
+  taxi -t 28901 neidb
 #+end_src
 #+begin_export latex
 The largest number of sequenced genomes assembled to level complete is
 7884.
 #+end_export
-#+begin_src bash <<res.sh>>=
+#+begin_src bash <<survey.sh>>=
   tail -n 1 gcComp.dat
 #+end_src
 #+begin_export latex
-This is the genome count for \emph{Escherichia coli}.
+This is the genome count of taxon 562, \emph{Escherichia coli}.
 #+end_export
-#+begin_src bash <<res.sh>>=
-  awk '$4==7884' anyComp.txt
+#+begin_src bash <<survey.sh>>=
+  awk '$3==7884' recRaw.txt
+#+end_src
+#+begin_export latex
+We investigate taxonomic structure below the species rank. There are
+19,665 species with at least two genomes which might contain such
+structure.
+#+end_export
+#+begin_src bash <<survey.sh>>=
+  awk '$2>1' recRaw.txt |
+      wc -l
+#+end_src
+#+begin_export latex
+4,868 species have a greater recursive genome count than raw genome
+count, which is indicative of taxonomic structure.
+#+end_export
+#+begin_src bash <<survey.sh>>=
+  awk '$2>$4' recRaw.txt |
+      wc -l
+#+end_src
+#+begin_export latex
+The species with taxonomic structure contain 2,359,927 genomes.
+#+end_export
+#+begin_src bash <<survey.sh>>=
+  awk '$2>$4{s+=$2}END{print s}' recRaw.txt
+#+end_src
+#+begin_export latex
+If we restrict our analysis to complete genomes, there are 1,685
+species with taxonomic sub-structure.
+#+end_export
+#+begin_src bash <<survey.sh>>=
+  awk '$3>$5' recRaw.txt |
+      wc -l
+#+end_src
+#+begin_export latex
+The species with taxonomic sub-structure contain 57,102 genomes.
+#+end_export
+#+begin_src bash <<survey.sh>>=
+  awk '$3>$5{s+=$3}END{print s}' recRaw.txt
 #+end_src
