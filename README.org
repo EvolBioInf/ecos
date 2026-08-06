@@ -40,11 +40,11 @@ you can safely ignore, and results in four relevant files inside
   on 17th June 2026
 - =eco.json=, the genome summaries of the 7884 /E. coli/ genomes
   assembled to level "complete"
-- =eco.nwk=, the tree of the 7362 complete /E. coli/ genomes that
+- =eco.nwk=, the tree of the 7361 complete /E. coli/ genomes that
   passed the quality filter
-- =sero.txt=, the serotypes of the 7362 complete /E. coli/ genomes
+- =sero.txt=, the serotypes of the 7361 complete /E. coli/ genomes
   calculated with [[https://github.com/phac-nml/ecoli_serotyping][ectyper]]
-- =mlst.txt=, the sequence types of the 7362 complete /E. coli/
+- =mlst.txt=, the sequence types of the 7361 complete /E. coli/
   genomes retrieved using the program [[https://github.com/tseemann/mlst][mlst]]
 
 ** Tutorial
