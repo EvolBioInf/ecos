@@ -42,5 +42,7 @@ o157h7/o157h7*.txt
 sero.txt
 tutorial
 
+query/*.txt
+query/tmp.json
 survey/*.txt
 survey/*.dat

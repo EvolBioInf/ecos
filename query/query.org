@@ -1,5 +1,5 @@
 #+begin_export latex
-\section{Finding and Filtering \emph{E. coli} Genomes}
+\section{Finding, Filtering, and Counting \emph{E. coli} Genomes}
 Again, our working directory is \ty{tutorial} inside the \ty{ecos}
 repo. In Table~\ref{tab:taxa} we already noted that there are 7884
 complete \emph{E. coli} genomes. We get the accessions for these and
@@ -27,9 +27,9 @@ JSON format in a temporary file, \ty{tmp.json}.
 #+end_src
 #+begin_export latex
 To keep this tutorial stable, we switch to the summary file of 17th
-Juni 2026, \ty{eco.json}. From this we pick the accessions where the
+June 2026, \ty{eco.json}. From this we pick the accessions where the
 annotation notes do not contain the word ``fail'', the attribute
-``atypical'' is not true, no rRNA or tRNA genes are missing, and
+``atypical'' is not true, no rRNA or tRNA genes are missing, no
 proteins have been frameshifted, and the ANI check has not failed.
 #+end_export
 #+begin_src sh <<query.sh>>=
@@ -51,6 +51,157 @@ the original 7884.
 #+end_export
 #+begin_src sh <<query.sh>>=
   wc -l eco.txt
+#+end_src
+#+begin_export latex
+We are interested in the distribution of these 7361 genomes among the
+taxa below the species rank. Specifically, we look for the taxa with
+at least ten genomes. So we extract the taxon-IDs other than 562, and
+store them in the file \ty{taxids.txt}.
+#+end_export
+#+begin_src bash <<query.sh>>=
+  while read acc; do
+      q="select taxid"
+      q="$q from genome"
+      q="$q where accession = '$acc'"
+      taxid=$(sqlite3 neidb "$q")
+      echo $taxid
+  done < eco.txt |
+      awk '$1!="562"' > taxids.txt
+#+end_src
+#+begin_export latex
+We might be tempted at this point to count the distinct
+accessions. This gives seven taxa with genome counts ranging from 160
+to 11.
+#+end_export
+#+begin_src bash <<query.sh>>=
+  sort taxids.txt |
+      uniq -c |
+      sort -n -r |
+      awk '$1>=10{printf("%s\t%s\n", $2, $1)}' |
+      cat -n
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+     1	83334	160
+     2	991910	22
+     3	83333	20
+     4	941322	19
+     5	511145	19
+     6	2605619	16
+     7	1055538	11
+\end{verbatim}
+However, genomes per taxon include the genomes of the subtaxa. To get
+this \emph{recursive} genome count, we look up the ancestors below
+\emph{E. coli}, 562, for each of our taxon-IDs. We save the result in
+\ty{taxids2.txt}.
+#+end_export
+#+begin_src bash <<query.sh>>=
+  while read taxid; do
+      ants $taxid neidb |
+  	awk 'open{print $2}$2==562{open=1}'
+  done < taxids.txt > taxids2.txt
+#+end_src
+#+begin_export latex
+The genome counts we now get range from 170 to 11, so they differ from
+the naïve counts we got above. They also differ from the counts in
+Table~\ref{tab:taxa}, which we got with \ty{dree} directly from the
+database.
+#+end_export
+#+begin_src bash <<query.sh>>=
+  sort taxids2.txt |
+      uniq -c |
+      sort -n -r |
+      awk '$1>=10{printf("%s\t%s\n", $2, $1)}' |
+      cat -n
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+     1	83334	170
+     2	83333	50
+     3	991910	22
+     4	941322	19
+     5	511145	19
+     6	2605619	16
+     7	1055538	12
+\end{verbatim}
+#+end_export
+#+begin_export latex
+Our list of seven taxa might contain hierarchical relationships. To
+find out, we first save the list to the file \ty{focalTaxa.txt}.
+#+end_export
+#+begin_src bash <<query.sh>>=
+  sort taxids2.txt |
+      uniq -c |
+      sort -n -r |
+      awk '$1>=10{printf("%s\t%s\n", $2, $1)}' |
+      cat -n > focalTaxa.txt
+#+end_src
+#+begin_export latex
+For each of the focal taxa, we look up the ancestors below 562 and
+count the distinct taxa we get. We find one taxon with a count greater
+than 1, 83333. Its count of 2 indicates that one of the other six
+members of the taxon list is a subtaxon of 83333.
+#+end_export
+#+begin_src bash <<query.sh>>=
+  while read n taxid count; do
+      ants $taxid neidb |
+          awk 'open{print $2}$2==562{open=1}'
+  done < focalTaxa.txt |
+      sort |
+      uniq -c |
+      sort -n -r
+#+end_src
+#+begin_export latex
+\begin{verbatim}
+      2 83333
+      1 991910
+      1 941322
+      1 83334
+      1 511145
+      1 2605619
+      1 1055538
+\end{verbatim}
+#+end_export
+#+begin_export latex
+To find out which of our taxa is a subtaxon of 83333, we plot the
+taxonomy rooted on 83333 to get Figure~\ref{fig:83333}. This shows
+that 511145 is a subtaxon of 83333.
+\begin{figure}
+  \begin{center}
+    \resizebox{\textwidth}{!}{\includegraphics{../query/83333}}
+  \end{center}
+  \caption{The taxonomy rooted on 83333 showing the taxa with
+    sequenced genomes.}\label{fig:83333}
+\end{figure}
+#+end_export
+#+begin_src bash <<query.sh>>=
+  dree -g 83333 neidb |
+      xdot -
+#+end_src
+#+begin_export latex
+We remove taxon 511145 from our list of seven focal taxa and look up the
+names of the remaining six to get Table~\ref{tab:foc}.
+\begin{table}
+  \caption{The taxa, genome counts, and names of our six focal taxa}\label{tab:foc}
+  \begin{center}
+    \begin{tabular}{clrl}
+      \hline
+      \# & Taxon & Genomes & Name\\\hline
+      \input{../query/focal}\\\hline
+    \end{tabular}
+  \end{center}
+\end{table}
+#+end_export
+#+begin_src bash <<query.sh>>=
+  grep -v 511145 focalTaxa.txt |
+      while read n taxid ng; do
+  	printf "%s\t%s\t" $taxid $ng
+  	taxi -t $taxid neidb |
+  	    tail -n +2 |
+  	    awk '{for(i=3;i<=NF;i++)printf(" %s", $i)}'
+  	echo ""
+      done |
+      cat -n
 #+end_src
 #+begin_export latex
 The next few commands form a ``bridge'' between the accessions and the
@@ -120,9 +271,8 @@ corresponds to an ANI of 96.1, which fits the species criterion.
 # d(562_GCF_057180125.1, 562_GCF_022654545.1): 0.0391
 \end{verbatim}
 
-We now query our grand \emph{E. coli} tree for the six taxa directly
-below the species rank listed in Table~\ref{tab:taxa} following the
-order in that table.
+We now query our grand \emph{E. coli} tree for our six focal taxa
+listed in Table~\ref{tab:foc} following the order in that table.
 
 \section{\emph{E. coli} O157:H7 (83334)}\label{sec:o157h7}
 \input{o157h7}
