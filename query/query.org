@@ -55,8 +55,8 @@ the original 7884.
 #+begin_export latex
 We are interested in the distribution of these 7361 genomes among the
 taxa below the species rank. Specifically, we look for the taxa with
-at least ten genomes. So we extract the taxon-IDs other than 562, and
-store them in the file \ty{taxids.txt}.
+at least ten genomes. So we look up the taxon-ID for each genome,
+discard 562, and store the remainder in file \ty{taxids.txt}.
 #+end_export
 #+begin_src bash <<query.sh>>=
   while read acc; do
