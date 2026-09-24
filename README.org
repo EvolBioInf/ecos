@@ -56,5 +56,6 @@ This now contains the scripts and data files for following the
 tutorial described in the [[https://owncloud.gwdg.de/index.php/s/jzF2dkp7L5xjqP1][doc]]. We can also run all scripts to test
 them.
 #+begin_src bash
+  cd tutorial
   bash testTut.sh
 #+end_src
