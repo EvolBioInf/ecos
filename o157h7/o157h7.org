@@ -39,7 +39,7 @@ We count the nine taxa we have just stored.
 Now we store the members of these taxa in file \ty{o157h7\_2.txt}
 #+end_export
 #+begin_src bash <<o157h7.sh>>=
-  pickle 1 eco2.nwk |
+  pickle 1 eco.nwk |
       grep -f o157h7.txt > o157h7_2.txt
 #+end_src
 #+begin_export latex
@@ -61,7 +61,7 @@ neighbors, and 191 genomes just classified as \emph{E. coli}, the
 unknowns, summing to 370 genomes.
 #+end_export
 #+begin_src bash <<o157h7.sh>>=
-  fintac -H neidb -t 83334_ -u 562_ eco2.nwk
+  fintac -H neidb -t 83334_ -u 562_ eco.nwk
 #+end_src
 #+begin_export latex
 \begin{verbatim}
@@ -77,7 +77,7 @@ classified as O157:H7. We find that, indeed, two of them are not
 O157:H7, but one is, *003722195.1.
 #+end_export
 #+begin_src bash <<o157h7.sh>>=
-  pickle -c 3131 eco2.nwk |
+  pickle -c 3131 eco.nwk |
       grep -f o157h7_2.txt |
       grep -f - sero.txt
 #+end_src
@@ -93,7 +93,7 @@ To investigate the stray genome, *003722195.1, we look up its most
 recent common ancestor with node 3131, which is node 3119.
 #+end_export
 #+begin_src bash <<o157h7.sh>>=
-  mrca "^3131$|_003722195" eco2.nwk
+  mrca "^3131$|_003722195" eco.nwk
 #+end_src
 #+begin_export latex
 \begin{verbatim}
@@ -121,7 +121,7 @@ that the stray genome is no ordinary O157:H7.
 \end{figure}
 #+end_export
 #+begin_src bash <<o157h7.sh>>=
-  pickle -t 3119 eco2.nwk |
+  pickle -t 3119 eco.nwk |
       land -l |
       plotTree
 #+end_src
@@ -130,7 +130,7 @@ When we look up the sequence types of the 370 strains in clade 3131,
 we can see that with the exception of four genomes they are ST11.
 #+end_export
 #+begin_src bash <<o157h7.sh>>=
-  pickle 3131 eco2.nwk |
+  pickle 3131 eco.nwk |
       grep -f o157h7_2.txt |
       grep -f - mlst.txt |
       awk '$2!="11"'
@@ -157,7 +157,7 @@ O157:H7 clade might be one of the two near ancestral nodes of 3131,
 3130 and 3120. Clade 3130 indeed adds another O157:H7.
 #+end_export
 #+begin_src bash <<o157h7.sh>>=
-  pickle -t 3130 eco2.nwk |
+  pickle -t 3130 eco.nwk |
       pickle -c 3131 |
       grep -f - sero.txt
 #+end_src
@@ -170,7 +170,7 @@ O157:H7 clade might be one of the two near ancestral nodes of 3131,
 However, it is not ST11 but ST11458.
 #+end_export
 #+begin_src bash <<o157h7.sh>>=
-  pickle -t 3130 eco2.nwk |
+  pickle -t 3130 eco.nwk |
       pickle -c 3131 |
       grep -f - mlst.txt
 #+end_src
@@ -181,7 +181,7 @@ However, it is not ST11 but ST11458.
 Node 3120 adds no O157:H7, but a clade of O55:H7.
 #+end_export
 #+begin_src bash <<o157h7.sh>>=
-  pickle -t 3120 eco2.nwk |
+  pickle -t 3120 eco.nwk |
       pickle -c 3130 |
       grep -f - sero.txt
 #+end_src
@@ -197,7 +197,7 @@ Finally, none of the genomes in 3120 are ST11, but predominantly
 ST335.
 #+end_export
 #+begin_src bash <<o157h7.sh>>=
-  pickle -t 3120 eco2.nwk |
+  pickle -t 3120 eco.nwk |
       pickle -c 3130 |
       grep -f - mlst.txt
 #+end_src

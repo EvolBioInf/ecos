@@ -9,8 +9,9 @@ neighbors -l -L complete -t 562 -o neidb |
     grep -c '^t'
 neighbors -l -L complete -t 991910 neidb |
     grep '^[tn]' |
-    awk '{print $2}' |
-    head -n 50 > acc.txt
+    head -n 50 |
+    awk '{print $2, $3}' > accTax.txt
+awk '{print $1}' accTax.txt > acc.txt
 datasets download genome accession \
            --inputfile acc.txt \
            --dehydrated \

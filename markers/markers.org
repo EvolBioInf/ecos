@@ -7,13 +7,22 @@ we can construct markers for the target genomes by identifying the
 genome regions that appear in all target genomes that are absent from
 the neighbors.
 
-From our \emph{E.~coli} tree we get the 49 genome accessions of the
-taxa in Figure~\ref{fig:all}.
+From our \emph{E.~coli} tree we get the 49 genome accessions and
+taxon-IDs of the taxa in Figure~\ref{fig:all} and save them in file
+\ty{accTax.txt}.
 #+end_export
 #+begin_src sh <<markers.sh>>=
-  pickle 5377 eco2.nwk |
+  pickle 5377 eco.nwk |
       grep -v '^#' |
-      sed 's/[^_]*_//' > acc.txt
+      sed 's/_/ /' |
+      awk '{print $2, $1}' > accTax.txt
+#+end_src
+#+begin_export latex
+To prepare for downloading the genomes, we extract the genome
+accessions and save them in file \ty{acc.txt}.
+#+end_export
+#+begin_src sh <<markers.sh>>=
+  awk '{print $1}' accTax.txt > acc.txt
 #+end_src
 #+begin_export latex
 We download the corresponding genomes.
@@ -48,7 +57,7 @@ genomes into it.
 #+end_export
 #+begin_src sh <<markers.sh>>=
   mkdir targets
-  pickle -t 5377 eco2.nwk |
+  pickle -t 5377 eco.nwk |
       pickle 5379 |
       grep -v '^#' |
       while read name; do
@@ -61,7 +70,7 @@ Similarly, we link the neighbors genomes into the directory
 #+end_export
 #+begin_src sh <<markers.sh>>=
   mkdir neighbors
-  pickle -t 5377 eco2.nwk |
+  pickle -t 5377 eco.nwk |
       pickle -c 5379 |
       grep -v '^#' |
       while read name; do

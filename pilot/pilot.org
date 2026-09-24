@@ -63,8 +63,7 @@ belonging neither to O111:H8 nor to its parent.
 If we take the species \emph{E. coli} as target and count all of its
 complete genomes, we get 7,884. This tells us that only 7\,\% of
 \emph{E. coli} genomes are classified below the species rank, when
-probably far more \emph{E. coli} genomes also belong to known
-categories below the species rank.
+probably far more of them also belong to categories below that rank.
 #+end_export
 #+begin_src sh <<Get genomes, Ch. \ref{ch:p}>>=
   neighbors -l -L complete -t 562 -o neidb |
@@ -72,14 +71,21 @@ categories below the species rank.
 #+end_src
 #+begin_export latex
 For our pilot analysis we pick all 22 target genomes and the first 28
-neighbor genomes listed, a total of 50, extract their accessions and
-store them in \ty{acc.txt}.
+neighbor genomes listed, a total of 50, and store their accessions and
+taxon-IDs in \ty{accTax.txt}.
 #+end_export
 #+begin_src sh <<Get genomes, Ch. \ref{ch:p}>>=
   neighbors -l -L complete -t 991910 neidb |
       grep '^[tn]' |
-      awk '{print $2}' |
-      head -n 50 > acc.txt
+      head -n 50 |
+      awk '{print $2, $3}' > accTax.txt
+#+end_src
+#+begin_export latex
+To prepare for downloading the genomes, we extract their accessions
+from \ty{accTax.txt} and store them in \ty{acc.txt}.
+#+end_export
+#+begin_src sh <<Get genomes, Ch. \ref{ch:p}>>=
+  awk '{print $1}' accTax.txt > acc.txt
 #+end_src
 #+begin_export latex
 We use the program \ty{datasets} to download the genomes in

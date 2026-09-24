@@ -19,7 +19,7 @@ complete O16:H48 genomes in Genbank.
 All 16 of them have ended up in our grand tree.
 #+end_export
 #+begin_src bash <<o16h48.sh>>=
-  pickle 1 eco2.nwk |
+  pickle 1 eco.nwk |
       grep -c 2605619_
 #+end_src
 #+begin_export latex
@@ -29,7 +29,7 @@ which is a cluster and contains 13 of our 16 taxonomic targets plus 3
 unknowns.
 #+end_export
 #+begin_src bash <<o16h48.sh>>=
-  clusters -t eco2.nwk |
+  clusters -t eco.nwk |
   fintac -t 2605619_ -u 562_
 #+end_src
 #+begin_export latex
@@ -41,8 +41,8 @@ Clade 7025 is contained in clade 7011, the O16:H48 clade from
 Section~\ref{sec:k12}. Clade 7011 is the next cluster up from 7025.
 #+end_export
 #+begin_src bash <<o16h48.sh>>=
-  clusters -t eco2.nwk |
-      climt 7025c eco2.nwk
+  clusters -t eco.nwk |
+      climt 7025c eco.nwk
 #+end_src
 #+begin_export latex
 \begin{verbatim}
@@ -58,7 +58,7 @@ Section~\ref{sec:k12}. Clade 7011 is the next cluster up from 7025.
 Clade 7011 contains all 16 taxa with ID 2605619.
 #+end_export
 #+begin_src bash <<o16h48.sh>>=
-  pickle 7011 eco2.nwk |
+  pickle 7011 eco.nwk |
       grep -c 2605619_
 #+end_src
 #+begin_export latex
@@ -66,7 +66,7 @@ Clade 7011 is also the lowest and hence smallest clade containing all
 16 taxa with ID 2605619.
 #+end_export
 #+begin_src bash <<o16h48.sh>>=
-  mrca 2605619_ eco2.nwk
+  mrca 2605619_ eco.nwk
 #+end_src
 #+begin_export latex
 \begin{verbatim}

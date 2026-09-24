@@ -64,5 +64,5 @@ grep -v 511145 focalTaxa.txt |
     cat -n
 pickle 1 eco.nwk |
     grep -c -v '^#'
-midRoot -p eco2.nwk |
+midRoot -p eco.nwk |
     head -n 1

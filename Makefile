@@ -4,7 +4,7 @@ data:
 	tar -xvjf data_ecos.tbz
 	make -C data
 	rm data_ecos.tbz
-tutorial: data data/eco.json data/eco.nwk data/mlst.txt data/neidb data/sero.txt intro/intro.sh markers/markers.sh pilot/pilot.sh query/query.sh scripts/rename.sh scripts/testTut.sh o157h7/o157h7.sh k12/k12.sh o111h8/o111h8.sh o25bh4/o25bh4.sh o16h48/o16h48.sh o145/o145.sh
+tutorial: data data/eco.json data/eco.nwk data/mlst.txt data/sero.txt intro/intro.sh markers/markers.sh pilot/pilot.sh query/query.sh scripts/rename.sh scripts/testTut.sh o157h7/o157h7.sh k12/k12.sh o111h8/o111h8.sh o25bh4/o25bh4.sh o16h48/o16h48.sh o145/o145.sh
 	test -d tutorial || mkdir tutorial
 	cp intro/intro.sh pilot/pilot.sh query/query.sh markers/markers.sh tutorial/
 	cp o157h7/o157h7.sh k12/k12.sh o111h8/o111h8.sh o25bh4/o25bh4.sh o16h48/o16h48.sh o145/o145.sh tutorial/
@@ -13,29 +13,26 @@ tutorial: data data/eco.json data/eco.nwk data/mlst.txt data/neidb data/sero.txt
 	ln -s $$(pwd)/data/eco.* tutorial/
 	ln -s $$(pwd)/data/mlst.txt tutorial/
 	ln -s $$(pwd)/data/sero.txt tutorial/
-pilot/pilot.sh:
+pilot/pilot.sh: pilot/pilot.org
 	make -C pilot
-query/query.sh:
+query/query.sh: query/query.org
 	make -C query
-markers/markers.sh:
+markers/markers.sh: markers/markers.org
 	make -C markers
-intro/intro.sh:
+intro/intro.sh: intro/intro.org
 	make -C intro
-o157h7/o157h7.sh:
+o157h7/o157h7.sh: o157h7/o157h7.org
 	make -C o157h7
-k12/k12.sh:
+k12/k12.sh: k12/k12.org
 	make -C k12
-o111h8/o111h8.sh:
+o111h8/o111h8.sh: o111h8/o111h8.org
 	make -C o111h8
-o25bh4/o25bh4.sh:
+o25bh4/o25bh4.sh: o25bh4/o25bh4.org
 	make -C o25bh4
-o16h48/o16h48.sh:
+o16h48/o16h48.sh: o16h48/o16h48.org
 	make -C o16h48
-o145/o145.sh:
+o145/o145.sh: o145/o145.org
 	make -C o145
-scripts/rename.sh:
-	test -d free || git clone https://github.com/evolbioinf/free
-	cp free/aux/rename.sh scripts/
 data/eco.*: data
 data/sero.txt: data
 setup:

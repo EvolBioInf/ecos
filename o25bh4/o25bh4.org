@@ -14,7 +14,7 @@ There are 19 \ob genomes in Genbank
 All 19 of them have ended up in our grand tree.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  pickle 1 eco2.nwk |
+  pickle 1 eco.nwk |
       grep -c 941322_
 #+end_src
 #+begin_export latex
@@ -23,7 +23,7 @@ picked by \ty{fintac}, together with 6 neighbors and an astonishing
 789 unknonwns.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  fintac -t 941322_ -u 562_ eco2.nwk
+  fintac -t 941322_ -u 562_ eco.nwk
 #+end_src
 #+begin_export latex
 \begin{verbatim}
@@ -36,7 +36,7 @@ The serotypes of clade 245 are mixed, with two serotypes dominating,
 O25:H4 and O16:H5.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  pickle 245 eco2.nwk |
+  pickle 245 eco.nwk |
       grep -f - sero.txt |
       awk '{print $2}' |
       sort |
@@ -53,11 +53,11 @@ O25:H4 and O16:H5.
 #+end_export
 #+begin_export latex
 It seems the clade picked by \ty{fintac} consists at least of the two
-clades \ob and O16:H5. To further investigate, we look up the children
+clades \ob{} and O16:H5. To further investigate, we look up the children
 of 245, 246 and 451.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  climt -d 1 245 eco2.nwk
+  climt -d 1 245 eco.nwk
 #+end_src
 #+begin_export latex
 \begin{verbatim}
@@ -70,14 +70,14 @@ of 245, 246 and 451.
 Clade 246 contains 206 genomes.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  pickle 246 eco2.nwk |
+  pickle 246 eco.nwk |
       grep -v '^#' -c
 #+end_src
 #+begin_export latex
 Of these 206 genomes 190, or 92\,\%, are serotype O16:H5.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  pickle 246 eco2.nwk |
+  pickle 246 eco.nwk |
       grep -f - sero.txt |
       awk '{print $2}' |
       sort |
@@ -95,7 +95,7 @@ In particular, the four strains classified as \ob in that clade are in
 fact O16:H5.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  pickle 246 eco2.nwk |
+  pickle 246 eco.nwk |
       grep 941322_ |
       grep -f - sero.txt
 #+end_src
@@ -110,7 +110,7 @@ The most recent common ancestor of these four stray genomes is node
 273.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  pickle -t 246 eco2.nwk |
+  pickle -t 246 eco.nwk |
       mrca 941322_
 #+end_src
 #+begin_export latex
@@ -118,10 +118,10 @@ The most recent common ancestor of these four stray genomes is node
 MRCA 273
 ...
 \end{verbatim}
-Clade 273 contains 29 taxa, 14\,\% of the total.
+Clade 273 contains 29 genomes, or 0.4\,\% of the total tree.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  pickle 273 eco2.nwk |
+  pickle 273 eco.nwk |
       grep -v '^#' -c
 #+end_src
 #+begin_export latex
@@ -131,7 +131,7 @@ annotate the clusters on the resulting tree. From that tree
 c, it isn't a cluster
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  pickle -t -c 273 eco2.nwk |
+  pickle -t -c 273 eco.nwk |
       clusters -t |
       fintac -t 941322_ -u 562_
 #+end_src
@@ -148,7 +148,7 @@ that 245, albeit a cluster, is not correct as it contains the O16:H5
 clade.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  clusters -t eco2.nwk |
+  clusters -t eco.nwk |
       climt 532
 #+end_src
 #+begin_export latex
@@ -170,7 +170,7 @@ above node 532, node 519. Out of its 540 genomes, 536, or 99\,\%, are
 O25:H4.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  pickle 519 eco2.nwk |
+  pickle 519 eco.nwk |
       grep -f - sero.txt |
       awk '{print $2}' |
       sort |
@@ -186,7 +186,7 @@ Similarly, 523, or 97\,\%, of the genomes in clade 519 belong to
 ST131, which together with serotype O25:H4 defines \ob.
 #+end_export
 #+begin_src bash <<o25bh4.sh>>=
-  pickle 519 eco2.nwk |
+  pickle 519 eco.nwk |
       grep -f - mlst.txt |
       awk '{print $2}' |
       sort |

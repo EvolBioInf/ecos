@@ -1,6 +1,8 @@
-pickle 5377 eco2.nwk |
+pickle 5377 eco.nwk |
     grep -v '^#' |
-    sed 's/[^_]*_//' > acc.txt
+    sed 's/_/ /' |
+    awk '{print $2, $1}' > accTax.txt
+awk '{print $1}' accTax.txt > acc.txt
 datasets download genome accession \
            --inputfile acc.txt \
            --dehydrated \
@@ -10,14 +12,14 @@ datasets rehydrate --directory .
 mkdir all
 bash rename.sh
 mkdir targets
-pickle -t 5377 eco2.nwk |
+pickle -t 5377 eco.nwk |
     pickle 5379 |
     grep -v '^#' |
     while read name; do
           ln -s $(pwd)/all/${name} targets/${name}.fasta
     done
 mkdir neighbors
-pickle -t 5377 eco2.nwk |
+pickle -t 5377 eco.nwk |
     pickle -c 5379 |
     grep -v '^#' |
     while read name; do

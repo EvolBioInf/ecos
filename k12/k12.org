@@ -39,7 +39,7 @@ of the 65 listed in Table~\ref{tab:taxa}, 15 did not pass the quality
 filter.
 #+end_export
 #+begin_src bash <<k12.sh>>=
-  pickle 1 eco2.nwk |
+  pickle 1 eco.nwk |
       grep -f k12.txt -c
 #+end_src
 #+begin_export latex
@@ -48,7 +48,7 @@ The program \ty{fintac} picks node 7112 as the K-12 clade. It contains
 instead of the original 50.
 #+end_export
 #+begin_src bash <<k12.sh>>=
-  fintac -H neidb -t 83333_ -u 562_ eco2.nwk
+  fintac -H neidb -t 83333_ -u 562_ eco.nwk
 #+end_src
 #+begin_export latex
 \begin{verbatim}
@@ -61,7 +61,7 @@ The predominant serotype in clade 7112 is O16:H48, but there are eight
 exceptions.
 #+end_export
 #+begin_src bash <<k12.sh>>=
-  pickle 7112 eco2.nwk |
+  pickle 7112 eco.nwk |
       grep -f - sero.txt |
       grep -v O16:H48
 #+end_src
@@ -83,7 +83,7 @@ encounter is 7011, whose parental branch has length $7\times 10^{-5}$,
 roughly 20 times longer than the parental branch of 7112.
 #+end_export
 #+begin_src bash <<k12.sh>>=
-  clusters -t eco2.nwk |
+  clusters -t eco.nwk |
       climt 7112
 #+end_src
 #+begin_export latex
@@ -107,7 +107,7 @@ We hypothesize that 7011 is our target clade and find only one
 additional serotype exception, another -:H48.
 #+end_export
 #+begin_src bash <<k12.sh>>=
-  pickle 7011 eco2.nwk |
+  pickle 7011 eco.nwk |
       grep -f - sero.txt |
       grep -v O16:H48
 #+end_src
@@ -116,7 +116,7 @@ However, now we have identified 351 K-12 genomes instead of previously
 250.
 #+end_export
 #+begin_src bash <<k12.sh>>=
-  pickle 7011 eco2.nwk |
+  pickle 7011 eco.nwk |
       grep -v '^#' -c
 #+end_src
 #+begin_export latex
@@ -131,7 +131,7 @@ which contains a clade with two very long branches.
 \end{figure}
 #+end_export
 #+begin_src bash <<k12.sh>>=
-  pickle -t 7011 eco2.nwk |
+  pickle -t 7011 eco.nwk |
       land -r -l |
       plotTree
 #+end_src
@@ -142,7 +142,7 @@ the nodes by branch length, we find that node 7278 has the longest
 incoming branch, followed by *044094645.1.
 #+end_export
 #+begin_src bash <<k12.sh>>=
-  pickle -t 7011 eco2.nwk |
+  pickle -t 7011 eco.nwk |
       clusters -b 7011 |
       grep -v '^#' |
       sort -k 3 -g -r |
@@ -170,7 +170,7 @@ the internal nodes with \ty{land}.
 \end{figure}
 #+end_export
 #+begin_src bash <<k12.sh>>=
-  pickle -t 7276 eco2.nwk |
+  pickle -t 7276 eco.nwk |
       land -r |
       plotTree
 #+end_src
@@ -178,7 +178,7 @@ the internal nodes with \ty{land}.
 We can list the seven genomes in clade 7276.
 #+end_export
 #+begin_src bash <<k12.sh>>=
-  pickle 7276 eco2.nwk
+  pickle 7276 eco.nwk
 #+end_src
 #+begin_export latex
 \begin{verbatim}

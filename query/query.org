@@ -263,7 +263,7 @@ largest distance between two taxa in our phylogeny, 0.0391.  This
 corresponds to an ANI of 96.1, which fits the species criterion.
 #+end_export
 #+begin_src sh <<query.sh>>=
-  midRoot -p eco2.nwk |
+  midRoot -p eco.nwk |
       head -n 1
 #+end_src
 #+begin_export latex

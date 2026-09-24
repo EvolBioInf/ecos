@@ -16,7 +16,7 @@ taxon 1055538, and one for its child taxon 1055544.
 All 12 of these genomes are contained in our grand tree.
 #+end_export
 #+begin_src bash <<o145.sh>>=
-  pickle 1 eco2.nwk |
+  pickle 1 eco.nwk |
       egrep -c '(1055538_|1055544_)'
 #+end_src
 #+begin_export latex
@@ -24,7 +24,7 @@ Clade 3600 contains 8 targets, 3 neighbors, and 3 unknowns. However,
 clade 3600 is not a cluster.
 #+end_export
 #+begin_src bash <<o145.sh>>=
-  clusters -t eco2.nwk |
+  clusters -t eco.nwk |
       fintac -H neidb -t 1055538_ -u 562_
 #+end_src
 #+begin_export latex
@@ -36,7 +36,7 @@ clade 3600 is not a cluster.
 If we climb from 3600 to look for the nearest cluster, we find 3587.
 #+end_export
 #+begin_src bash <<o145.sh>>=
-  clusters -t eco2.nwk |
+  clusters -t eco.nwk |
       climt 3600
 #+end_src
 #+begin_export latex
@@ -53,14 +53,14 @@ If we climb from 3600 to look for the nearest cluster, we find 3587.
 Clade 3587 contains all 12 starting taxa
 #+end_export
 #+begin_src bash <<o145.sh>>=
-  pickle 3587 eco2.nwk |
+  pickle 3587 eco.nwk |
       egrep -c '(1055538_|1055544_)'
 #+end_src
 #+begin_export latex
 Reassuringly, clade 3587 contains 27 O145 genomes.
 #+end_export
 #+begin_src bash <<o145.sh>>=
-  pickle 3587 eco2.nwk |
+  pickle 3587 eco.nwk |
       grep -f - sero.txt |
       grep -c 'O145:-'
 #+end_src
@@ -69,7 +69,7 @@ Moreover, clade 3587 contains no other genomes, so we accept it as the
 O145 clade.
 #+end_export
 #+begin_src bash <<o145.sh>>=
-  pickle 3587 eco2.nwk |
+  pickle 3587 eco.nwk |
       grep -f - sero.txt |
       grep -v 'O145:-'
 #+end_src

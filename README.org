@@ -31,10 +31,10 @@ Execute
 #+begin_src sh
   make data
 #+end_src
-to generate the directory =data= and calculate the Neighbors database
-inside it. This takes approximately 2.5 minutes, produces 166 warnings
-you can safely ignore, and results in four relevant files inside
-=data=,
+to generate the directory =data= and download the Neighbors database,
+=neidb=, inside it. Since =neidb= is 1.3 GB large, this takes a couple
+of minutes, depending on the speed of your internet connection. The
+result consists of four files inside =data=,
 - =neidb=, the Neighbors database calculated from the [[https://ftp.ncbi.nlm.nih.gov/genomes/ASSEMBLY_REPORTS/assembly_summary_genbank.txt][Genbank assemblies]],
   [[https://ftp.ncbi.nlm.nih.gov/genomes/ASSEMBLY_REPORTS/assembly_summary_refseq.txt][Refseq assemblies]], and the [[https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz][taxonomy database]] downloaded from the NCBI
   on 17th June 2026
