@@ -1,6 +1,6 @@
 * [[https://owncloud.gwdg.de/index.php/s/gBUs2jg5WA8g3lO][Classifying the Genomes of /E. coli/ Strains]]
 This analysis is part of a forthcoming manuscript entitled
-/Classifying Bacterial Genomes Below the Species Rank/.
+/Classifying E. coli genomes into phylotaxa/.
 
 ** Authors
 Beatriz Vieira Mourato, Sara-Lena Welk, Fabian Klötzl, and Bernhard
