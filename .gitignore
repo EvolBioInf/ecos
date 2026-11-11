@@ -8,7 +8,6 @@ pilot/rename.sh
 !tutorial/pilot.sh
 !tutorial/query.sh
 *~
-data
 doc/*.aux
 doc/*.bbl
 doc/*.blg
@@ -30,17 +29,17 @@ doc/pilot.tex
 doc/query.tex
 doc/survey.tex
 doc/version.txt
-eco.json
-eco.nwk
-eco.txt
-eco2.nwk
-k12/k12.txt
+[oqk]*/eco.json
+[oqk]*/eco.nwk
+[oqk]*/eco.txt
+[oqk]*/eco2.nwk
+[oqk]*/k12.txt
 markers/*
 !markers/markers.sh
-mlst.txt
+[oqk]*/mlst.txt
 neidb
 o157h7/o157h7*.txt
-sero.txt
+[oqk]*/sero.txt
 tutorial
 
 query/*.txt
