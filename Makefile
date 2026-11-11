@@ -1,5 +1,6 @@
 all: data tutorial
-data:
+neidb: data/neidb
+data/neidb:
 	make -C data
 tutorial: data data/eco.json data/eco.nwk data/mlst.txt data/sero.txt intro/intro.sh markers/markers.sh pilot/pilot.sh query/query.sh scripts/rename.sh scripts/testTut.sh o157h7/o157h7.sh k12/k12.sh o111h8/o111h8.sh o25bh4/o25bh4.sh o16h48/o16h48.sh o145/o145.sh
 	test -d tutorial || mkdir tutorial
